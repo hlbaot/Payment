@@ -16,7 +16,7 @@ export default function HomePage() {
               The architect of institutional-grade cross-border liquidity. 
               Experience transfers with zero friction and absolute clarity.
             </p>
-            <Link href="#" className="btn btn-primary px-8 py-4 text-lg">
+            <Link href="/counter-market" className="btn btn-primary px-8 py-4 text-lg">
               Explore Corridors
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
             </Link>
@@ -79,7 +79,7 @@ export default function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section className="section-padding bg-section-bg">
+      <section id="how-it-works" className="section-padding bg-section-bg">
         <div className="container">
           <div className="max-w-xl mb-16">
             <h2 className="text-4xl font-bold mb-6">Precision-Engineered Transfers</h2>
@@ -199,7 +199,7 @@ export default function HomePage() {
                 <Link href="/register" className="btn bg-white text-primary px-10 py-5 text-lg">
                   Get Started Now
                 </Link>
-                <Link href="#" className="btn border border-white/30 text-white px-10 py-5 text-lg hover:bg-white/10">
+                <Link href="/contact" className="btn border border-white/30 text-white px-10 py-5 text-lg hover:bg-white/10">
                   Schedule Demo
                 </Link>
               </div>

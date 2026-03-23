@@ -2,6 +2,19 @@
 import Link from 'next/link';
 
 export default function SuccessPage() {
+  const receiptHref = `data:text/plain;charset=utf-8,${encodeURIComponent(
+    [
+      'SwiftGuard Kinetic Receipt',
+      'Reference: #PG-99281-XC',
+      'Recipient: Alex Thompson',
+      'Allocation: Global Equity Fund',
+      'Amount: $4,250.00',
+      'Date: Oct 24, 2023',
+      'Time: 14:32 UTC',
+      'Status: Submitted',
+    ].join('\n')
+  )}`;
+
   return (
     <div className="min-h-screen relative flex items-center justify-center py-20 px-6 font-sans bg-[#F9FAFB]">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-orange-50/50 via-transparent to-transparent pointer-events-none"></div>
@@ -73,10 +86,14 @@ export default function SuccessPage() {
 
         {/* Download Link */}
         <div className="mt-10 text-center">
-           <button className="inline-flex items-center text-primary hover:text-[#E65C00] font-bold text-[13px] tracking-wide transition-colors">
+           <a
+             href={receiptHref}
+             download="swiftguard-kinetic-receipt.txt"
+             className="inline-flex items-center text-primary hover:text-[#E65C00] font-bold text-[13px] tracking-wide transition-colors"
+           >
               <svg className="mr-2" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
               Download Receipt
-           </button>
+           </a>
         </div>
 
       </div>

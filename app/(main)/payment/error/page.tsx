@@ -36,9 +36,9 @@ export default function ErrorPage() {
               <svg className="opacity-90" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21.5 2v6h-6M2.13 15.57a10 10 0 1 0 3.8-11.45L2 8"></path></svg>
               Retry Payment
            </Link>
-           <button className="h-[64px] bg-[#F8F9FA] border border-gray-200/80 hover:bg-gray-100 text-[#B24606] rounded-[20px] font-bold text-[14.5px] flex flex-col justify-center items-center gap-1.5 transition-all shadow-sm hover:-translate-y-0.5">
+           <Link href="/wallet" className="h-[64px] bg-[#F8F9FA] border border-gray-200/80 hover:bg-gray-100 text-[#B24606] rounded-[20px] font-bold text-[14.5px] flex flex-col justify-center items-center gap-1.5 transition-all shadow-sm hover:-translate-y-0.5">
               Check Balance
-           </button>
+           </Link>
         </div>
 
         {/* Support Link */}

@@ -202,6 +202,7 @@ export default function ChatWidget({ prefillMessage }: { prefillMessage?: string
           <div className="flex-1 relative">
             <input
               ref={inputRef}
+              aria-label="Message support"
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}

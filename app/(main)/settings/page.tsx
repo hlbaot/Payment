@@ -19,8 +19,8 @@ export default function SettingsPage() {
            <div className="flex items-center gap-10">
               <h1 className="text-[26px] font-bold text-gray-900 tracking-tight">Settings</h1>
               <nav className="hidden md:flex gap-8">
-                 <Link href="#" className="text-[13px] font-bold text-gray-400 hover:text-gray-600">Market Rates</Link>
-                 <Link href="#" className="text-[13px] font-bold text-gray-400 hover:text-gray-600">Help Center</Link>
+                 <Link href="/commission-table" className="text-[13px] font-bold text-gray-400 hover:text-gray-600">Market Rates</Link>
+                 <Link href="/support" className="text-[13px] font-bold text-gray-400 hover:text-gray-600">Help Center</Link>
               </nav>
            </div>
         </div>
@@ -56,12 +56,13 @@ export default function SettingsPage() {
                  <div className="space-y-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                        <div className="space-y-2">
-                          <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest pl-1">Email Address</label>
+                          <label htmlFor="settings-email" className="text-[11px] font-bold text-gray-400 uppercase tracking-widest pl-1">Email Address</label>
                           <div className="relative">
                              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
                              </div>
                              <input 
+                                id="settings-email"
                                 type="email" 
                                 value={email} 
                                 onChange={(e) => setEmail(e.target.value)}
@@ -70,12 +71,13 @@ export default function SettingsPage() {
                           </div>
                        </div>
                        <div className="space-y-2">
-                          <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest pl-1">Phone Number</label>
+                          <label htmlFor="settings-phone" className="text-[11px] font-bold text-gray-400 uppercase tracking-widest pl-1">Phone Number</label>
                           <div className="relative">
                              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
                              </div>
                              <input 
+                                id="settings-phone"
                                 type="tel" 
                                 value={phone} 
                                 onChange={(e) => setPhone(e.target.value)}
@@ -85,12 +87,13 @@ export default function SettingsPage() {
                        </div>
                     </div>
                     <div className="space-y-2">
-                       <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest pl-1">Physical Address</label>
+                       <label htmlFor="settings-address" className="text-[11px] font-bold text-gray-400 uppercase tracking-widest pl-1">Physical Address</label>
                        <div className="relative">
                           <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
                           </div>
                           <input 
+                             id="settings-address"
                              type="text" 
                              value={address} 
                              onChange={(e) => setAddress(e.target.value)}
@@ -224,7 +227,7 @@ export default function SettingsPage() {
                  <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-3xl group-hover:bg-primary/30 transition-all"></div>
                  <h4 className="text-[16px] font-bold mb-3 relative z-10">Vault Protection</h4>
                  <p className="text-gray-400 text-[13px] leading-relaxed mb-6 relative z-10">Up to $250,000 coverage on your digital vault deposits through Kinetic Insure.</p>
-                 <Link href="#" className="text-[12px] font-bold text-primary flex items-center gap-2 group-hover:gap-3 transition-all relative z-10">
+                 <Link href="/security" className="text-[12px] font-bold text-primary flex items-center gap-2 group-hover:gap-3 transition-all relative z-10">
                     Learn about Kinetic Security
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
                  </Link>

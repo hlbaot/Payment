@@ -51,13 +51,13 @@ export default function RegisterPage() {
               <p className="text-gray-600 mb-10 text-[15px]">Already have an account? <Link href="/login" className="text-primary font-bold hover:underline">Log in</Link></p>
               
               <div className="text-left space-y-2 mb-10">
-                <label className="text-sm font-bold text-gray-900">Country of residence</label>
+                <label htmlFor="register-country" className="text-sm font-bold text-gray-900">Country of residence</label>
                 <div className="relative">
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
                     <span className="text-[22px] leading-none">🇺🇸</span>
                     <span className="font-semibold text-gray-900 border-l border-gray-200 pl-3 ml-1 h-5 flex items-center">United States</span>
                   </div>
-                  <select className="w-full h-[56px] pl-[140px] pr-10 bg-white border border-gray-200 rounded-xl appearance-none cursor-pointer focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all shadow-sm">
+                  <select id="register-country" className="w-full h-[56px] pl-[140px] pr-10 bg-white border border-gray-200 rounded-xl appearance-none cursor-pointer focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all shadow-sm">
                     <option value="us"></option>
                   </select>
                   <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
@@ -81,7 +81,7 @@ export default function RegisterPage() {
               <p className="text-gray-600 mb-10 text-[15px]">We'll send a code to secure your account</p>
               
               <div className="text-left space-y-2 mb-8">
-                <label className="text-sm font-bold text-gray-900">Mobile number</label>
+                <label htmlFor="register-phone" className="text-sm font-bold text-gray-900">Mobile number</label>
                 <div className="flex gap-3">
                   <div className="relative w-[130px]">
                      <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
@@ -89,14 +89,14 @@ export default function RegisterPage() {
                        <span className="font-semibold text-gray-900 text-[15px]">+1</span>
                        <span className="font-semibold text-gray-900 text-[15px] ml-1">US</span>
                      </div>
-                     <select className="w-full h-[56px] pl-[84px] pr-8 bg-white border border-gray-200 rounded-xl appearance-none cursor-pointer focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all shadow-sm">
+                     <select aria-label="Country calling code" className="w-full h-[56px] pl-[84px] pr-8 bg-white border border-gray-200 rounded-xl appearance-none cursor-pointer focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all shadow-sm">
                        <option></option>
                      </select>
                      <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m6 9 6 6 6-6"/></svg>
                      </div>
                   </div>
-                  <input type="tel" placeholder="(555) 000-0000" className="flex-1 h-[56px] px-4 bg-white border border-gray-200 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-gray-400 font-medium text-[16px] shadow-sm" />
+                  <input id="register-phone" type="tel" placeholder="(555) 000-0000" className="flex-1 h-[56px] px-4 bg-white border border-gray-200 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-gray-400 font-medium text-[16px] shadow-sm" />
                 </div>
               </div>
               
@@ -125,9 +125,9 @@ export default function RegisterPage() {
               
               <div className="text-left space-y-6 mb-10">
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-900">New Password</label>
+                  <label htmlFor="register-password" className="text-sm font-bold text-gray-900">New Password</label>
                   <div className="relative">
-                    <input type="password" placeholder="Enter your password" className="w-full h-[56px] px-4 bg-white border border-gray-200 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-gray-400 font-medium text-[16px] shadow-sm" />
+                    <input id="register-password" type="password" placeholder="Enter your password" className="w-full h-[56px] px-4 bg-white border border-gray-200 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-gray-400 font-medium text-[16px] shadow-sm" />
                     <button className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors">
                       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
                     </button>
@@ -157,8 +157,8 @@ export default function RegisterPage() {
                 </div>
                 
                 <div className="space-y-2 pt-2">
-                  <label className="text-sm font-bold text-gray-900">Confirm Password</label>
-                  <input type="password" placeholder="Repeat your password" className="w-full h-[56px] px-4 bg-white border border-gray-200 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-gray-400 font-medium text-[16px] shadow-sm" />
+                  <label htmlFor="register-password-confirm" className="text-sm font-bold text-gray-900">Confirm Password</label>
+                  <input id="register-password-confirm" type="password" placeholder="Repeat your password" className="w-full h-[56px] px-4 bg-white border border-gray-200 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-gray-400 font-medium text-[16px] shadow-sm" />
                 </div>
               </div>
               
@@ -184,23 +184,23 @@ export default function RegisterPage() {
               <div className="text-left space-y-5 mb-8">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-bold text-gray-900">First Name</label>
-                    <input type="text" placeholder="John" className="w-full h-[56px] px-4 bg-white border border-gray-200 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-gray-400 font-medium text-[16px] shadow-sm" />
+                    <label htmlFor="register-first-name" className="text-sm font-bold text-gray-900">First Name</label>
+                    <input id="register-first-name" type="text" placeholder="John" className="w-full h-[56px] px-4 bg-white border border-gray-200 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-gray-400 font-medium text-[16px] shadow-sm" />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-bold text-gray-900">Last Name</label>
-                    <input type="text" placeholder="Doe" className="w-full h-[56px] px-4 bg-white border border-gray-200 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-gray-400 font-medium text-[16px] shadow-sm" />
+                    <label htmlFor="register-last-name" className="text-sm font-bold text-gray-900">Last Name</label>
+                    <input id="register-last-name" type="text" placeholder="Doe" className="w-full h-[56px] px-4 bg-white border border-gray-200 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-gray-400 font-medium text-[16px] shadow-sm" />
                   </div>
                 </div>
                 
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-900">Date of Birth</label>
-                  <input type="text" placeholder="mm/dd/yyyy" className="w-full h-[56px] px-4 bg-white border border-gray-200 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-gray-400 font-medium text-[16px] shadow-sm" />
+                  <label htmlFor="register-date-of-birth" className="text-sm font-bold text-gray-900">Date of Birth</label>
+                  <input id="register-date-of-birth" type="text" placeholder="mm/dd/yyyy" className="w-full h-[56px] px-4 bg-white border border-gray-200 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-gray-400 font-medium text-[16px] shadow-sm" />
                 </div>
                 
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-900">Residential Address</label>
-                  <textarea placeholder="Enter your full home address" className="w-full p-4 bg-white border border-gray-200 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-gray-400 font-medium text-[16px] shadow-sm resize-none h-[110px]"></textarea>
+                  <label htmlFor="register-address" className="text-sm font-bold text-gray-900">Residential Address</label>
+                  <textarea id="register-address" placeholder="Enter your full home address" className="w-full p-4 bg-white border border-gray-200 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-gray-400 font-medium text-[16px] shadow-sm resize-none h-[110px]"></textarea>
                 </div>
               </div>
               
@@ -230,4 +230,3 @@ export default function RegisterPage() {
     </div>
   );
 }
-

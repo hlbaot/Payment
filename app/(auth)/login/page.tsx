@@ -38,12 +38,13 @@ export default function LoginPage() {
         
         <form className="space-y-6" onSubmit={handleLogin}>
           <div className="space-y-2">
-            <label className="text-xs font-bold text-gray-400 uppercase">Email Address</label>
+            <label htmlFor="login-email" className="text-xs font-bold text-gray-400 uppercase">Email Address</label>
             <div className="relative">
               <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m3 9 9 6 9-6v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z"/><path d="m3 9 2.45-1.64A2 2 0 0 1 6.56 7h10.88a2 2 0 0 1 1.11.36L21 9"/></svg>
               </div>
               <input 
+                id="login-email"
                 type="email" 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -56,14 +57,15 @@ export default function LoginPage() {
           
           <div className="space-y-2">
             <div className="flex justify-between items-center">
-              <label className="text-xs font-bold text-gray-400 uppercase">Password</label>
-              <Link href="#" className="text-xs font-bold text-primary hover:underline">Forgot Password?</Link>
+              <label htmlFor="login-password" className="text-xs font-bold text-gray-400 uppercase">Password</label>
+              <Link href="/forgot-password" className="text-xs font-bold text-primary hover:underline">Forgot Password?</Link>
             </div>
             <div className="relative">
               <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
               </div>
               <input 
+                id="login-password"
                 type="password" 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -111,10 +113,10 @@ export default function LoginPage() {
       </div>
       
       <div className="mt-12 flex gap-8 text-[11px] font-bold text-gray-400 uppercase tracking-widest">
-        <Link href="#" className="hover:text-primary">Security</Link>
-        <Link href="#" className="hover:text-primary">Privacy Policy</Link>
-        <Link href="#" className="hover:text-primary">Terms of Service</Link>
-        <Link href="#" className="hover:text-primary">Cookie Settings</Link>
+        <Link href="/security" className="hover:text-primary">Security</Link>
+        <Link href="/privacy" className="hover:text-primary">Privacy Policy</Link>
+        <Link href="/terms" className="hover:text-primary">Terms of Service</Link>
+        <Link href="/cookie-settings" className="hover:text-primary">Cookie Settings</Link>
       </div>
     </div>
   );
