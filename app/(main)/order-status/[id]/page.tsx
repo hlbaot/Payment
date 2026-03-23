@@ -1,8 +1,29 @@
 'use client';
 
 import Link from 'next/link';
+import { useState } from 'react';
 
 export default function OrderStatusPage() {
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    // Simulate network pull
+    setTimeout(() => {
+      setIsRefreshing(false);
+    }, 1500);
+  };
+
+  const handleSupport = () => {
+    const orderId = '#SW-284910';
+    const message = `I need help with Order ${orderId}`;
+    
+    // Simulate opening chat with auto-paste
+    alert(`[Support Chat] Auto-pasted: "${message}"\n\nConnecting to support agent...`);
+    // In a real app, this would open a widget like Intercom/Zendesk with:
+    // window.Intercom('showNewMessage', message);
+  };
+
   return (
     <div className="min-h-screen bg-[#F9FAFB] font-sans text-gray-900 pb-24">
       <div className="container max-w-[1140px] mx-auto px-6 pt-12">
@@ -14,14 +35,17 @@ export default function OrderStatusPage() {
             <h1 className="text-[38px] md:text-[42px] font-bold text-[#111827] leading-[1.1] mb-3 tracking-tight">Order #SW-284910</h1>
             <p className="text-gray-500 text-[15.5px] font-medium leading-relaxed">Detailed status for your kinetic asset acquisition.</p>
           </div>
-          <div className="flex gap-4 mt-8 md:mt-0 shadow-sm rounded-xl">
-            <button className="h-[48px] px-6 bg-white border border-gray-200 text-gray-700 font-bold text-[13.5px] rounded-[14px] flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors">
+          <div className="flex flex-wrap gap-4 mt-8 md:mt-0 items-center">
+            <button className="h-[48px] px-6 bg-white border border-gray-200 text-gray-700 font-bold text-[13.5px] rounded-[14px] flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors shadow-sm">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
               Download Invoice
             </button>
-            <button className="h-[48px] px-6 bg-[#E65C00] hover:bg-[#CC5200] text-white font-bold text-[13.5px] rounded-[14px] flex items-center justify-center gap-2 transition-colors shadow-[0_4px_14px_rgba(230,92,0,0.3)]">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 10l-4 4l6 6l4-16l-18 7l4 2l2 6l3-4"></path></svg>
-              Contact Support
+            <button 
+              onClick={handleSupport}
+              className="h-[48px] px-6 bg-[#E65C00] hover:bg-[#CC5200] text-white font-bold text-[13.5px] rounded-[14px] flex items-center justify-center gap-2 transition-all shadow-[0_4px_14px_rgba(230,92,0,0.3)] hover:scale-105"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              Message Support about this Order
             </button>
           </div>
         </div>
@@ -38,7 +62,7 @@ export default function OrderStatusPage() {
               <div className="w-[52px] h-[52px] rounded-[16px] bg-[#E65C00] text-white flex items-center justify-center mb-5 shadow-[0_6px_16px_rgba(230,92,0,0.3)]">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
               </div>
-              <span className="text-[11px] font-bold text-gray-900 uppercase tracking-widest">Pending</span>
+              <span className="text-[11px] font-bold text-gray-900 uppercase tracking-widest">Requested</span>
             </div>
             
             {/* Step 2 */}
@@ -46,7 +70,7 @@ export default function OrderStatusPage() {
               <div className="w-[52px] h-[52px] rounded-[16px] bg-[#E65C00] text-white flex items-center justify-center mb-5 shadow-[0_6px_16px_rgba(230,92,0,0.3)]">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
               </div>
-              <span className="text-[11px] font-bold text-gray-900 uppercase tracking-widest">Processing</span>
+              <span className="text-[11px] font-bold text-gray-900 uppercase tracking-widest">Verifying</span>
             </div>
             
             {/* Step 3 */}
@@ -54,7 +78,7 @@ export default function OrderStatusPage() {
               <div className="w-[60px] h-[60px] rounded-[20px] bg-white border-[4px] border-[#E65C00] text-[#E65C00] flex items-center justify-center mb-4 shadow-[0_8px_20px_rgba(230,92,0,0.2)]">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
               </div>
-              <span className="text-[11px] font-bold text-gray-900 uppercase tracking-widest">Sent</span>
+              <span className="text-[11px] font-bold text-gray-900 uppercase tracking-widest">Disbursing</span>
             </div>
             
             {/* Step 4 */}
@@ -113,19 +137,30 @@ export default function OrderStatusPage() {
             </div>
 
             <div className="flex justify-center mt-2">
-               <Link href="/dashboard" className="inline-flex items-center text-gray-400 hover:text-gray-700 font-bold text-[14px] transition-colors">
+               <Link href="/counter-market" className="inline-flex items-center text-gray-400 hover:text-gray-700 font-bold text-[14px] transition-colors">
                   <svg className="mr-2" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                  Back to Dashboard
+                  Back to Counter Market
                </Link>
             </div>
           </div>
 
           <div className="lg:col-span-4">
             <div className="bg-white border border-gray-100 rounded-[32px] p-8 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] h-full flex flex-col relative overflow-hidden">
-              <h3 className="text-[18px] font-bold text-gray-900 mb-10 flex items-center gap-3">
-                <svg className="text-[#E65C00]" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                Real-time Updates
-              </h3>
+              <div className="flex justify-between items-center mb-10">
+                <h3 className="text-[18px] font-bold text-gray-900 flex items-center gap-3">
+                  <svg className="text-[#E65C00]" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                  Real-time Updates
+                </h3>
+                <button 
+                  onClick={handleRefresh}
+                  disabled={isRefreshing}
+                  className="flex items-center gap-1.5 text-[12px] font-bold text-primary hover:text-[#CC5200] transition-colors disabled:opacity-50"
+                  title="Pull latest status from Admin"
+                >
+                  <svg className={`${isRefreshing ? 'animate-spin opacity-80' : ''}`} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21.5 2v6h-6M2.13 15.57a10 10 0 1 0 3.8-11.45L2 8"></path></svg>
+                  {isRefreshing ? 'Refreshing...' : 'Refresh Status'}
+                </button>
+              </div>
 
               <div className="relative pl-6 border-l-[2px] border-gray-100 pb-10 flex-1 ml-2">
                 

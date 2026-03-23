@@ -15,8 +15,8 @@ export default function SuccessPage() {
                 <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
              </div>
           </div>
-          <h1 className="text-[30px] font-bold text-[#111827] mb-2.5 tracking-tight">Transfer Successful</h1>
-          <p className="text-[#64748B] text-[15.5px] font-medium">Your funds have been securely dispatched</p>
+          <h1 className="text-[28px] md:text-[30px] font-bold text-[#111827] mb-3 tracking-tight">Request Submitted Successfully!</h1>
+          <p className="text-[#64748B] text-[15px] font-medium max-w-[400px]">Our team is processing your payment via Wallet. Track progress below or contact support.</p>
         </div>
 
         {/* Total Amount */}
@@ -29,7 +29,7 @@ export default function SuccessPage() {
         <div className="bg-[#F8F9FA] border border-gray-100/80 rounded-[28px] p-8 mb-10 shadow-sm relative overflow-hidden">
           <div className="flex justify-between items-center mb-8 border-b border-gray-200/50 pb-5">
              <span className="text-[11.5px] font-bold text-[#111827] uppercase tracking-widest">Transaction Details</span>
-             <span className="bg-[#DCFCE7] text-[#059669] text-[9.5px] font-bold px-3.5 py-1.5 rounded-lg uppercase tracking-widest leading-none pt-[7px]">Completed</span>
+             <span className="bg-orange-50 text-primary text-[9.5px] font-bold px-3.5 py-1.5 rounded-lg uppercase tracking-widest leading-none pt-[7px]">Submitted</span>
           </div>
 
           <div className="grid grid-cols-2 gap-y-8 gap-x-4">
@@ -65,8 +65,9 @@ export default function SuccessPage() {
            <Link href="/counter-market" className="w-full h-[58px] bg-primary hover:bg-[#E65C00] text-white rounded-2xl font-bold text-[14.5px] flex justify-center items-center transition-all shadow-[0_8px_20px_rgba(255,102,0,0.25)]">
              New Transfer
            </Link>
-           <Link href="/wallet" className="w-full h-[58px] bg-white border border-gray-200 hover:bg-gray-50 text-[#111827] rounded-2xl font-bold text-[14.5px] flex justify-center items-center transition-all shadow-sm">
-             Go to Wallet
+           <Link href="/order-status/1" className="w-full h-[58px] bg-white border border-gray-200 hover:bg-gray-50 text-[#111827] rounded-2xl font-bold text-[14.5px] flex justify-center items-center gap-2 transition-all shadow-sm">
+             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+             Track Order Status
            </Link>
         </div>
 

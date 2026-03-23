@@ -1,7 +1,22 @@
 'use client';
 import Link from 'next/link';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function ReviewTransactionPage() {
+  const [isProcessing, setIsProcessing] = useState(false);
+  const router = useRouter();
+
+  const handleConfirm = () => {
+    if (isProcessing) return;
+    setIsProcessing(true);
+    // Simulate transaction processing
+    setTimeout(() => {
+      setIsProcessing(false);
+      router.push('/payment/success');
+    }, 2000);
+  };
+
   return (
     <div className="min-h-screen bg-[#F9FAFB] font-sans text-gray-900 pb-20">
       <div className="container max-w-[1140px] mx-auto px-6 pt-12">
@@ -122,10 +137,23 @@ export default function ReviewTransactionPage() {
 
                   {/* Submit Buttons */}
                   <div className="flex gap-4">
-                     <Link href="/payment/success" className="flex-1 h-[54px] bg-[#E65C00] hover:bg-[#CC5200] text-white font-bold text-[14.5px] rounded-[14px] flex justify-center items-center gap-2.5 transition-all shadow-[0_6px_20px_rgba(230,92,0,0.25)] hover:-translate-y-0.5">
-                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                       CONFIRM & PAY
-                     </Link>
+                     <button 
+                        onClick={handleConfirm}
+                        disabled={isProcessing}
+                        className="flex-1 h-[54px] bg-[#E65C00] hover:bg-[#CC5200] text-white font-bold text-[14.5px] rounded-[14px] flex justify-center items-center gap-2.5 transition-all shadow-[0_6px_20px_rgba(230,92,0,0.25)] hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none"
+                     >
+                        {isProcessing ? (
+                          <>
+                            <svg className="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
+                            PROCESSING...
+                          </>
+                        ) : (
+                          <>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                            CONFIRM & PAY
+                          </>
+                        )}
+                     </button>
                      <Link href="/create-order" className="w-1/3 min-w-[110px] h-[54px] bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-bold text-[14px] rounded-[14px] flex justify-center items-center transition-all shadow-sm">
                        Cancel
                      </Link>

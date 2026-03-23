@@ -49,8 +49,8 @@ export default function CreateOrderPage() {
               <div>
                 <label className="block text-[13px] font-bold text-gray-900 mb-2">Counter *</label>
                 <div className="relative">
-                  <select className="w-full h-[56px] pl-5 pr-12 bg-white border border-gray-200 rounded-xl appearance-none cursor-pointer focus:border-primary focus:ring-1 focus:ring-primary outline-none text-[15px] font-medium text-gray-700 shadow-sm transition-all">
-                    <option value="" disabled selected>Select counter</option>
+                  <select defaultValue="" className="w-full h-[56px] pl-5 pr-12 bg-white border border-gray-200 rounded-xl appearance-none cursor-pointer focus:border-primary focus:ring-1 focus:ring-primary outline-none text-[15px] font-medium text-gray-700 shadow-sm transition-all">
+                    <option value="" disabled>Select counter</option>
                     <option value="vip-1">VIP Counter 01</option>
                     <option value="std-1">Standard Transfer</option>
                   </select>
@@ -64,8 +64,8 @@ export default function CreateOrderPage() {
               <div>
                 <label className="block text-[13px] font-bold text-gray-900 mb-2">Order Type *</label>
                 <div className="relative">
-                  <select className="w-full h-[56px] pl-5 pr-12 bg-white border border-gray-200 rounded-xl appearance-none cursor-pointer focus:border-primary focus:ring-1 focus:ring-primary outline-none text-[15px] font-medium text-gray-700 shadow-sm transition-all">
-                    <option value="" disabled selected>Select order type</option>
+                  <select defaultValue="" className="w-full h-[56px] pl-5 pr-12 bg-white border border-gray-200 rounded-xl appearance-none cursor-pointer focus:border-primary focus:ring-1 focus:ring-primary outline-none text-[15px] font-medium text-gray-700 shadow-sm transition-all">
+                    <option value="" disabled>Select order type</option>
                     <option value="transfer">US Fast Transfer</option>
                     <option value="payment">Global Utility Bill</option>
                   </select>
@@ -101,8 +101,8 @@ export default function CreateOrderPage() {
                   </span>
                 </div>
               </div>
-              <p className="text-gray-500 text-[12px] font-medium mt-3">
-                Minimum limit: $100.00. Maximum: $10,000,000.00
+              <p className="text-gray-400 text-[11px] font-bold uppercase tracking-wider mt-3 pl-1">
+                Min: $100.00 - Max: $10,000,000.00
               </p>
             </div>
 
