@@ -46,6 +46,8 @@ export default function Navbar() {
 
   const handleLogout = () => {
     localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('userName');
     setIsLoggedIn(false);
     setShowMobileMenu(false);
     router.push('/login');

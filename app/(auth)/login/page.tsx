@@ -17,8 +17,30 @@ export default function LoginPage() {
     // Simulate API call
     setTimeout(() => {
       setIsLoading(false);
+      const normalizedEmail = email.trim().toLowerCase();
+      const isAdminLogin =
+        normalizedEmail === 'admin@kinetic.com' &&
+        password === 'admin123';
+      const isSupporterLogin =
+        normalizedEmail === 'support@kinetic.com' &&
+        password === 'support123';
+
       localStorage.setItem('isLoggedIn', 'true');
-      router.push('/counter-market');
+      localStorage.setItem(
+        'userRole',
+        isAdminLogin ? 'admin' : isSupporterLogin ? 'supporter' : 'user'
+      );
+      localStorage.setItem(
+        'userName',
+        isAdminLogin ? 'Morgan Lee' : isSupporterLogin ? 'Support Lead' : 'John Doe'
+      );
+      router.push(
+        isAdminLogin
+          ? '/admin/orders'
+          : isSupporterLogin
+            ? '/supporter/messages'
+            : '/counter-market'
+      );
     }, 1200);
   };
 
@@ -34,6 +56,44 @@ export default function LoginPage() {
         <div className="text-center mb-10">
           <h1 className="text-3xl font-bold mb-3">Welcome Back</h1>
           <p className="text-muted">Please enter your details to access your account.</p>
+          <div className="mt-6 flex flex-wrap justify-center gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                setEmail('demo@kinetic.com');
+                setPassword('password123');
+              }}
+              className="inline-flex min-h-[40px] items-center rounded-full border border-gray-200 bg-white px-4 text-[12px] font-bold uppercase tracking-[0.12em] text-gray-600 transition-colors hover:bg-gray-50"
+            >
+              User Demo
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setEmail('admin@kinetic.com');
+                setPassword('admin123');
+              }}
+              className="inline-flex min-h-[40px] items-center rounded-full border border-[#FFD3B4] bg-[#FFF5EC] px-4 text-[12px] font-bold uppercase tracking-[0.12em] text-primary transition-colors hover:bg-[#FFF1E7]"
+            >
+              Admin Demo
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setEmail('support@kinetic.com');
+                setPassword('support123');
+              }}
+              className="inline-flex min-h-[40px] items-center rounded-full border border-[#D6E4FF] bg-[#F3F7FF] px-4 text-[12px] font-bold uppercase tracking-[0.12em] text-[#2563EB] transition-colors hover:bg-[#EAF1FF]"
+            >
+              Supporter Demo
+            </button>
+          </div>
+          <p className="mt-4 text-[12px] font-medium text-gray-400">
+            Admin mock: <span className="font-bold text-gray-600">admin@kinetic.com</span> / <span className="font-bold text-gray-600">admin123</span>
+          </p>
+          <p className="mt-2 text-[12px] font-medium text-gray-400">
+            Supporter mock: <span className="font-bold text-gray-600">support@kinetic.com</span> / <span className="font-bold text-gray-600">support123</span>
+          </p>
         </div>
         
         <form className="space-y-6" onSubmit={handleLogin}>
