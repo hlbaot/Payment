@@ -22,9 +22,6 @@ export default function Navbar() {
         pathname === '/create-order' ||
         pathname === '/review',
     },
-    { href: '/#how-it-works', label: 'How it Works', isActive: false },
-    { href: '/commission-table', label: 'Commission Table', isActive: pathname === '/commission-table' },
-    { href: '/support', label: 'Support', isActive: pathname === '/support' },
   ];
 
   useEffect(() => {
@@ -69,8 +66,8 @@ export default function Navbar() {
               key={link.label}
               href={link.href}
               className={`text-[14.5px] font-bold h-full flex items-center border-b-[3px] transition-colors ${link.isActive
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-gray-500 hover:text-gray-900'
+                ? 'border-primary text-primary'
+                : 'border-transparent text-gray-500 hover:text-gray-900'
                 }`}
             >
               {link.label}
@@ -199,8 +196,8 @@ export default function Navbar() {
               key={`mobile-${link.label}`}
               href={link.href}
               className={`min-h-[48px] px-4 rounded-2xl flex items-center justify-between text-[15px] font-bold transition-colors ${link.isActive
-                  ? 'bg-orange-50 text-primary'
-                  : 'text-gray-700 hover:bg-gray-50'
+                ? 'bg-orange-50 text-primary'
+                : 'text-gray-700 hover:bg-gray-50'
                 }`}
             >
               <span>{link.label}</span>
