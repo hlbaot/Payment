@@ -16,12 +16,13 @@ const marketingLinks = [
   { href: '/find-a-location', labelKey: 'nav.findLocation' },
   { href: '/orders', labelKey: 'nav.trackTransfer' },
   { href: '/documentation', labelKey: 'nav.resources' },
+  { href: '/counter-market', label: 'Counter' },
 ];
 
 const accountLinks = [
-  { href: '/orders', label: 'Orders' },
-  { href: '/wallet', label: 'Wallet' },
-  { href: '/settings', label: 'Settings' },
+  // { href: '/orders', label: 'Orders' },
+  // { href: '/wallet', label: 'Wallet' },
+  // { href: '/settings', label: 'Settings' },
 ];
 
 const moneyTransfersMenu = {
@@ -168,9 +169,15 @@ export default function Navbar() {
   const showNavOverlay = showTransfersMenu || showResourcesMenu;
   const transferCopy = locale === 'vi' ? moneyTransfersMenu.vi : moneyTransfersMenu.en;
   const resourcesCopy = locale === 'vi' ? resourcesMenu.vi : resourcesMenu.en;
+  const getNavLabel = (link: { label?: string; labelKey?: string }) =>
+    link.labelKey ? t(link.labelKey) : link.label ?? '';
 
   useEffect(() => {
-    const nextIsLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('userName');
+
+    const nextIsLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
     const frame = window.requestAnimationFrame(() => {
       setMounted(true);
       setIsLoggedIn(nextIsLoggedIn);
@@ -221,6 +228,9 @@ export default function Navbar() {
   }, [showLanguageMenu]);
 
   const handleLogout = () => {
+    sessionStorage.removeItem('isLoggedIn');
+    sessionStorage.removeItem('userRole');
+    sessionStorage.removeItem('userName');
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('userRole');
     localStorage.removeItem('userName');
@@ -400,10 +410,6 @@ export default function Navbar() {
       <Link href="/login" className="site-login-link">
         Login
       </Link>
-
-      <Link href="/register" className="site-register-button">
-        Register
-      </Link>
     </div>
   );
 
@@ -546,7 +552,7 @@ export default function Navbar() {
                     onMouseEnter={openResourcesMenu}
                     onMouseLeave={scheduleCloseResourcesMenu}
                   >
-                    {t(link.labelKey)}
+                    {getNavLabel(link)}
                   </button>
                   );
                 }
@@ -566,7 +572,7 @@ export default function Navbar() {
                   }}
                   onMouseLeave={isTransfersLink ? scheduleCloseTransfersMenu : undefined}
                 >
-                  {t(link.labelKey)}
+                  {getNavLabel(link)}
                 </Link>
                 );
               })}
@@ -723,7 +729,7 @@ export default function Navbar() {
                   className={`site-mobile-menu__link${isActive ? ' is-active' : ''}`}
                   onClick={closeMenus}
                 >
-                  <span>{t(link.labelKey)}</span>
+                  <span>{getNavLabel(link)}</span>
                   <span className="site-mobile-menu__link-chevron" aria-hidden="true">
                     <ChevronRightIcon />
                   </span>
@@ -753,9 +759,6 @@ export default function Navbar() {
             <div className="site-mobile-menu__footer">
               <Link href="/login" className="site-mobile-menu__login" onClick={closeMenus}>
                 Login
-              </Link>
-              <Link href="/register" className="site-mobile-menu__register" onClick={closeMenus}>
-                Register
               </Link>
             </div>
           )}

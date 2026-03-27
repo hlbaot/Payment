@@ -28,30 +28,20 @@ export default function AdminScaffold({
   const sidebarLinks = [
     {
       href: '/admin/orders',
-      label: 'Order Management',
+      label: 'User',
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="3" y="4" width="18" height="18" rx="2" />
-          <path d="M8 8h8" />
-          <path d="M8 12h8" />
-          <path d="M8 16h5" />
-        </svg>
-      ),
-    },
-    {
-      href: '/admin/deposits',
-      label: 'Deposit Requests',
-      icon: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="2" y="6" width="20" height="12" rx="2" />
-          <path d="M12 10v4" />
-          <path d="M10 12h4" />
+          <circle cx="12" cy="8" r="4" />
+          <path d="M5 21a7 7 0 0 1 14 0" />
         </svg>
       ),
     },
   ];
 
   const handleLogout = () => {
+    sessionStorage.removeItem('isLoggedIn');
+    sessionStorage.removeItem('userRole');
+    sessionStorage.removeItem('userName');
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('userRole');
     localStorage.removeItem('userName');
@@ -99,20 +89,8 @@ export default function AdminScaffold({
             </div>
           </nav>
 
-          <div className="px-4 pb-4 pt-6 lg:mt-auto">
-            <button
-              type="button"
-              className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-2xl bg-primary px-4 text-[15px] font-bold text-white shadow-[0_16px_30px_rgba(255,102,0,0.28)] transition-colors hover:bg-[#E65C00]"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 3v12" />
-                <path d="M7 10h10" />
-                <path d="M5 21h14" />
-              </svg>
-              Generate Report
-            </button>
-
-            <div className="mt-6 grid gap-2">
+          <div className="px-4 pb-6 pt-3">
+            <div className="grid gap-2">
               <Link
                 href="/support"
                 className="flex min-h-[44px] items-center gap-3 rounded-2xl px-4 text-[14px] font-semibold text-[#52637A] transition-colors hover:bg-gray-50"

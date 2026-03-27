@@ -46,7 +46,7 @@ export default function ChatWidget({ prefillMessage }: { prefillMessage?: string
   const emailInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const nextIsLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    const nextIsLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
     const savedEmail = localStorage.getItem('chatContactEmail') ?? '';
     setIsLoggedIn(nextIsLoggedIn);
     setContactEmail(savedEmail);

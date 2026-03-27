@@ -75,6 +75,9 @@ export default function SupporterScaffold({
   ];
 
   const handleLogout = () => {
+    sessionStorage.removeItem('isLoggedIn');
+    sessionStorage.removeItem('userRole');
+    sessionStorage.removeItem('userName');
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('userRole');
     localStorage.removeItem('userName');

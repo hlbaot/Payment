@@ -1,17 +1,29 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
 export default function CreateOrderPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [amount, setAmount] = useState('');
+  const currentServiceStep = Number(searchParams.get('serviceStep') ?? '0');
+  const nextServiceStep = Math.min(currentServiceStep + 1, 2);
+
+  const handleCreateOrder = () => {
+    sessionStorage.setItem('counterDetailPreviousStep', String(currentServiceStep));
+    sessionStorage.setItem('counterDetailCurrentStep', String(nextServiceStep));
+    sessionStorage.setItem('counterDetailAdvancePending', 'true');
+    router.push('/counter-market/1');
+  };
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-900 pb-20">
       <div className="container max-w-[1140px] mx-auto px-6 pt-10">
         
         {/* Back Link */}
-        <Link href="/counter-market" className="inline-flex items-center text-gray-500 hover:text-gray-900 font-medium text-[13px] tracking-wide mb-8 transition-colors">
+        <Link href="/counter-market/1" className="inline-flex items-center text-gray-500 hover:text-gray-900 font-medium text-[13px] tracking-wide mb-8 transition-colors">
           <svg className="mr-2" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="15 18 9 12 15 6"></polyline>
           </svg>
@@ -93,7 +105,7 @@ export default function CreateOrderPage() {
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="0.00" 
-                  className="flex-1 h-full bg-transparent text-[24px] font-bold text-gray-900 placeholder:text-gray-300 outline-none w-full appearance-none"
+                  className="flex-1 h-full w-full appearance-none border-0 bg-transparent text-[24px] font-bold text-gray-900 placeholder:text-gray-300 outline-none ring-0 focus:border-0 focus:outline-none focus:ring-0"
                 />
                 <div className="pr-5 shrink-0">
                   <span className="bg-[#FFF0E6] text-primary text-[11px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg">
@@ -181,14 +193,18 @@ export default function CreateOrderPage() {
 
             {/* Buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link href="/review" className="flex-1 h-[52px] bg-primary hover:bg-[#E65C00] text-white rounded-xl font-bold text-[14px] flex justify-center items-center gap-2 transition-all shadow-[0_6px_20px_rgba(255,102,0,0.25)]">
+              <button
+                type="button"
+                onClick={handleCreateOrder}
+                className="flex-1 h-[52px] bg-primary hover:bg-[#E65C00] text-white rounded-xl font-bold text-[14px] flex justify-center items-center gap-2 transition-all shadow-[0_6px_20px_rgba(255,102,0,0.25)]"
+              >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 5v14"></path>
                   <path d="M5 12h14"></path>
                 </svg>
                 Create Order
-              </Link>
-              <Link href="/counter-market" className="sm:w-[120px] h-[52px] bg-[#F4F5F7] hover:bg-[#EBECEF] text-gray-700 rounded-xl font-bold text-[14px] flex justify-center items-center transition-all">
+              </button>
+              <Link href="/counter-market/1" className="sm:w-[120px] h-[52px] bg-[#F4F5F7] hover:bg-[#EBECEF] text-gray-700 rounded-xl font-bold text-[14px] flex justify-center items-center transition-all">
                 Cancel
               </Link>
             </div>

@@ -241,7 +241,7 @@ export default function HomePage() {
             </div>
 
             <div className="transfer-card__actions">
-              <Link href="/register" className="transfer-card__primary">
+              <Link href="/login" className="transfer-card__primary">
                 {t('home.transfer.getStarted')}
               </Link>
 
@@ -273,7 +273,7 @@ export default function HomePage() {
                 {t('home.whatsapp.desc')}
               </p>
               <div className="promo-copy__actions">
-                <Link href="/register" className="promo-button promo-button--primary">
+                <Link href="/login" className="promo-button promo-button--primary">
                   {t('home.whatsapp.sendMoney')}
                 </Link>
                 <Link href="/contact" className="promo-button promo-button--ghost">
@@ -295,7 +295,7 @@ export default function HomePage() {
                 <strong>{t('home.team.descStrong')}</strong>
               </p>
               <div className="promo-copy__actions">
-                <Link href="/register" className="promo-button promo-button--primary">
+                <Link href="/login" className="promo-button promo-button--primary">
                   {t('home.team.sendToMexico')}
                 </Link>
                 <Link href="/about" className="promo-button promo-button--ghost">
@@ -496,7 +496,7 @@ export default function HomePage() {
         <div className="home-shell cta-section__inner">
           <p>{t('home.cta.top')}</p>
           <h2>{t('home.cta.title')}</h2>
-          <Link href="/register" className="promo-button promo-button--primary">
+          <Link href="/login" className="promo-button promo-button--primary">
             {t('home.cta.button')}
           </Link>
         </div>

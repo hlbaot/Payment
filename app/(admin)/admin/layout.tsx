@@ -1,5 +1,7 @@
 'use client';
 
+import ChatWidget from '@/components/ChatWidget';
+import { I18nProvider } from '@/components/I18nProvider';
 import { useRouter } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { useEffect, useState } from 'react';
@@ -9,11 +11,11 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-    const userRole = localStorage.getItem('userRole');
+    const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+    const userRole = sessionStorage.getItem('userRole');
 
     if (!isLoggedIn || userRole !== 'admin') {
-      router.replace('/login');
+      router.replace('/');
       return;
     }
 
@@ -22,19 +24,27 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
   if (!isReady) {
     return (
-      <div className="min-h-screen bg-[#F6F8FC] flex items-center justify-center px-6">
-        <div className="rounded-[28px] border border-gray-100 bg-white px-8 py-6 text-center shadow-[0_20px_50px_rgba(17,24,39,0.06)]">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21.5 2v6h-6" />
-              <path d="M2.1 11a10 10 0 1 0 3-6.7L8 8" />
-            </svg>
+      <I18nProvider>
+        <div className="min-h-screen bg-[#F6F8FC] flex items-center justify-center px-6">
+          <div className="rounded-[28px] border border-gray-100 bg-white px-8 py-6 text-center shadow-[0_20px_50px_rgba(17,24,39,0.06)]">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21.5 2v6h-6" />
+                <path d="M2.1 11a10 10 0 1 0 3-6.7L8 8" />
+              </svg>
+            </div>
+            <p className="text-[15px] font-semibold text-gray-700">Checking admin session...</p>
           </div>
-          <p className="text-[15px] font-semibold text-gray-700">Checking admin session...</p>
         </div>
-      </div>
+        <ChatWidget />
+      </I18nProvider>
     );
   }
 
-  return <>{children}</>;
+  return (
+    <I18nProvider>
+      {children}
+      <ChatWidget />
+    </I18nProvider>
+  );
 }

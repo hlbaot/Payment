@@ -5,13 +5,17 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { I18nProvider } from "@/components/I18nProvider";
 import Navbar from "@/components/Navbar";
+import ChatWidget from '@/components/ChatWidget';
+import { fakeUsers } from '@/data/fake/users';
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [inviteCode, setInviteCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const demoAccounts = fakeUsers;
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,63 +24,57 @@ export default function LoginPage() {
     setTimeout(() => {
       setIsLoading(false);
       const normalizedEmail = email.trim().toLowerCase();
-      const isAdminLogin =
-        normalizedEmail === 'admin@kinetic.com' &&
-        password === 'admin123';
-      const isSupporterLogin =
-        normalizedEmail === 'support@kinetic.com' &&
-        password === 'support123';
+      const matchedUser = fakeUsers.find(
+        (user) => user.email.toLowerCase() === normalizedEmail && user.password === password
+      );
 
-      localStorage.setItem('isLoggedIn', 'true');
-      localStorage.setItem(
+      sessionStorage.setItem('isLoggedIn', 'true');
+      sessionStorage.setItem(
         'userRole',
-        isAdminLogin ? 'admin' : isSupporterLogin ? 'supporter' : 'user'
+        matchedUser?.role ?? 'user'
       );
-      localStorage.setItem(
+      sessionStorage.setItem(
         'userName',
-        isAdminLogin ? 'Morgan Lee' : isSupporterLogin ? 'Support Lead' : 'John Doe'
+        matchedUser?.userName ?? 'John Doe'
       );
-      router.push(
-        isAdminLogin
-          ? '/admin/orders'
-          : isSupporterLogin
-            ? '/supporter/messages'
-            : '/counter-market'
+      sessionStorage.setItem(
+        'walletBalance',
+        String(matchedUser?.walletBalance ?? fakeUsers.find((user) => user.role === 'user')?.walletBalance ?? 0)
       );
+      router.push(matchedUser?.destination ?? '/counter-market');
     }, 1200);
   };
 
-  const handleDemoLogin = (role: 'admin' | 'supporter') => {
-    const isAdminDemo = role === 'admin';
+  const handleDemoLogin = (role: 'admin' | 'supporter' | 'user') => {
+    const selectedDemo = demoAccounts.find((account) => account.role === role);
 
-    setEmail(isAdminDemo ? 'admin@kinetic.com' : 'support@kinetic.com');
-    setPassword(isAdminDemo ? 'admin123' : 'support123');
+    if (!selectedDemo) {
+      return;
+    }
 
-    localStorage.setItem('isLoggedIn', 'true');
-    localStorage.setItem('userRole', isAdminDemo ? 'admin' : 'supporter');
-    localStorage.setItem('userName', isAdminDemo ? 'Morgan Lee' : 'Support Lead');
+    setEmail(selectedDemo.email);
+    setPassword(selectedDemo.password);
 
-    router.push(isAdminDemo ? '/admin/orders' : '/supporter/messages');
+    sessionStorage.setItem('isLoggedIn', 'true');
+    sessionStorage.setItem('userRole', selectedDemo.role);
+    sessionStorage.setItem('userName', selectedDemo.userName);
+    sessionStorage.setItem('walletBalance', String(selectedDemo.walletBalance));
+
+    router.push(selectedDemo.destination);
   };
 
   return (
     <I18nProvider>
       <>
         <Navbar />
-        <div className="flex min-h-[calc(100vh-var(--header-height))] items-center justify-center bg-white px-4 py-8 sm:px-6 sm:py-10 md:px-8">
+        <ChatWidget />
+        <div className="flex min-h-[calc(100vh-var(--header-height))] items-center justify-center bg-white px-4 pb-8 pt-16 sm:px-6 sm:pb-10 sm:pt-20 md:px-8">
           <div className="mx-auto flex w-full items-center justify-center">
             <section className="mx-auto w-full max-w-[470px] rounded-[24px] border border-[#D7DCE5] bg-white px-6 py-7 shadow-[0_8px_22px_rgba(15,23,42,0.02)] sm:px-7 sm:py-8">
               <form onSubmit={handleLogin} className="mx-auto flex w-full max-w-[360px] flex-col">
                 <h1 className="text-center text-[24px] font-bold tracking-[-0.04em] text-[#1C1C1C] sm:text-[28px]">
                   Welcome
                 </h1>
-
-                <p className="mt-7 text-[15px] leading-none tracking-[-0.03em] text-[#6A7690] sm:mt-8 sm:text-[17px]">
-                  New to Ria?{' '}
-                  <Link href="/register" className="font-bold text-primary">
-                    Register
-                  </Link>
-                </p>
 
                 <div className="mt-7 sm:mt-8">
                   <label
@@ -122,6 +120,23 @@ export default function LoginPage() {
                   </div>
                 </div>
 
+                <div className="mt-6 sm:mt-7">
+                  <label
+                    htmlFor="login-invite-code"
+                    className="block text-[15px] font-bold tracking-[-0.03em] text-[#1F1F1F] sm:text-[16px]"
+                  >
+                    Invite code
+                  </label>
+                  <input
+                    id="login-invite-code"
+                    type="text"
+                    value={inviteCode}
+                    onChange={(e) => setInviteCode(e.target.value)}
+                    placeholder="Enter your invite code"
+                    className="mt-3 h-[50px] w-full rounded-[10px] border border-[#D5DAE3] bg-white px-4 text-[15px] text-[#1F2937] outline-none transition-colors focus:border-[#B8C2D1] sm:h-[52px] sm:text-[16px]"
+                  />
+                </div>
+
                 <Link
                   href="/forgot-password"
                   className="mt-7 text-center text-[15px] font-bold tracking-[-0.03em] text-primary sm:mt-8 sm:text-[16px]"
@@ -145,30 +160,33 @@ export default function LoginPage() {
                 </p>
 
                 <div className="mt-6 grid gap-3 sm:mt-7">
-                  <button
-                    type="button"
-                    onClick={() => handleDemoLogin('admin')}
-                    className="flex w-full items-center justify-between rounded-[14px] border border-[#D7DCE5] bg-[#F8FAFC] px-4 py-3 text-left transition-colors hover:border-[#BFC7D6] hover:bg-[#F3F6FB]"
-                  >
-                    <span>
-                      <span className="block text-[14px] font-bold text-[#1F1F1F] sm:text-[15px]">
-                        Admin demo
+                  {demoAccounts.map((account) => (
+                    <button
+                      key={account.role}
+                      type="button"
+                      onClick={() => handleDemoLogin(account.role)}
+                      className="flex w-full items-center justify-between rounded-[14px] border border-[#D7DCE5] bg-[#F8FAFC] px-4 py-3 text-left transition-colors hover:cursor-pointer hover:border-[#BFC7D6] hover:bg-[#F3F6FB]"
+                    >
+                      <span>
+                        <span className="block text-[14px] font-bold text-[#1F1F1F] sm:text-[15px]">
+                          {account.label}
+                        </span>
+                        <span className="mt-1 block text-[12px] text-[#6A7690] sm:text-[13px]">
+                          {account.email}
+                        </span>
                       </span>
-                      <span className="mt-1 block text-[12px] text-[#6A7690] sm:text-[13px]">
-                        admin@kinetic.com
+                      <span className="text-[12px] font-bold uppercase tracking-[0.08em] text-primary">
+                        Demo
                       </span>
-                    </span>
-                    <span className="text-[12px] font-bold uppercase tracking-[0.08em] text-primary">
-                      Demo
-                    </span>
-                  </button>
+                    </button>
+                  ))}
                 </div>
 
                 <div className="mt-8 flex justify-end sm:mt-10">
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="inline-flex h-[48px] min-w-[112px] items-center justify-center rounded-full bg-[#D8DCE6] px-7 text-[15px] font-bold tracking-[-0.03em] text-[#8C96A9] transition-colors hover:bg-[#CFD4DF] disabled:cursor-wait sm:h-[50px] sm:min-w-[120px] sm:px-8 sm:text-[16px]"
+                    className="inline-flex h-[48px] min-w-[112px] items-center justify-center rounded-full border-2 border-primary bg-primary px-7 text-[15px] font-bold tracking-[-0.03em] text-white shadow-[0_8px_20px_rgba(255,102,0,0.28)] transition-colors hover:cursor-pointer hover:bg-[#E65C00] disabled:cursor-wait disabled:opacity-70 sm:h-[50px] sm:min-w-[120px] sm:px-8 sm:text-[16px]"
                   >
                     {isLoading ? 'Loading...' : 'Login'}
                   </button>

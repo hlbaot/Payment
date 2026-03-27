@@ -57,6 +57,9 @@ export default function WalletPage() {
                     <div>
                        <p className="text-white/70 text-[13px] font-bold uppercase tracking-[0.2em] mb-3">Available Balance</p>
                        <h2 className="text-[64px] font-black leading-none tracking-tight">$142,850.42</h2>
+                       <p className="mt-3 text-[16px] font-bold text-[#86EFAC]">
+                         Lợi nhuận mỗi ngày: 20%
+                       </p>
                        <p className="inline-flex items-center gap-2 mt-6 px-3 py-1.5 bg-black/10 rounded-lg text-[11px] font-bold tracking-widest text-white/60">
                          <span className="w-2 h-2 bg-white/40 rounded-full"></span>
                          Hold Balance: $1,250.00
