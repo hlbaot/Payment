@@ -12,7 +12,7 @@ export default function SupporterMessagesPage() {
       searchValue={knowledgeSearch}
       onSearchChange={setKnowledgeSearch}
     >
-      <SharedSupportInbox />
+      <SharedSupportInbox mode="messages" />
     </SupporterScaffold>
   );
 }

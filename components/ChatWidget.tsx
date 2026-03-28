@@ -2,6 +2,11 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useI18n } from '@/components/I18nProvider';
+import {
+  appendConversationMessage,
+  loadSupportConversations,
+  SUPPORT_UPDATED_EVENT,
+} from '@/data/fake/runtime-store';
 
 interface Message {
   id: number;
@@ -24,10 +29,13 @@ function nowTime() {
 
 export default function ChatWidget({ prefillMessage }: { prefillMessage?: string }) {
   const { t, locale } = useI18n();
+  const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [showEmailPrompt, setShowEmailPrompt] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [contactEmail, setContactEmail] = useState('');
+  const [sessionUserName, setSessionUserName] = useState('John Doe');
+  const [sessionUserEmail, setSessionUserEmail] = useState('');
   const [emailInput, setEmailInput] = useState('');
   const [emailError, setEmailError] = useState('');
   const [input, setInput] = useState('');
@@ -44,16 +52,74 @@ export default function ChatWidget({ prefillMessage }: { prefillMessage?: string
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const emailInputRef = useRef<HTMLInputElement>(null);
+  const previousMessageCountRef = useRef(0);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const nextIsLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
     const savedEmail = localStorage.getItem('chatContactEmail') ?? '';
+    const nextUserName = sessionStorage.getItem('userName') ?? 'John Doe';
+    const nextUserEmail = sessionStorage.getItem('userEmail') ?? savedEmail;
     setIsLoggedIn(nextIsLoggedIn);
     setContactEmail(savedEmail);
+    setSessionUserName(nextUserName);
+    setSessionUserEmail(nextUserEmail);
     if (!nextIsLoggedIn && !savedEmail) {
       setShowEmailPrompt(true);
     }
   }, []);
+
+  useEffect(() => {
+    if (!isLoggedIn || !sessionUserEmail) return undefined;
+
+    const syncConversation = () => {
+      const conversation = loadSupportConversations().find(
+        (item) => (item.userEmail ?? '').toLowerCase() === sessionUserEmail.toLowerCase()
+      );
+
+      if (!conversation) return;
+
+      const nextMessages: Message[] = conversation.messages.map((message, index) => ({
+        id: index + 1,
+        from: message.sender === 'user' ? 'user' : 'support',
+        text: message.text,
+        time: message.time,
+      }));
+
+      if (previousMessageCountRef.current > 0 && conversation.messages.length > previousMessageCountRef.current) {
+        const newestMessage = conversation.messages[conversation.messages.length - 1];
+        if (newestMessage?.sender === 'supporter' && !isOpen) {
+          setUnread((current) => current + 1);
+        }
+      }
+
+      previousMessageCountRef.current = conversation.messages.length;
+      setMessages(nextMessages);
+    };
+
+    syncConversation();
+
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === 'shared-support-conversations') {
+        syncConversation();
+      }
+    };
+
+    const handleSupportUpdated = () => {
+      syncConversation();
+    };
+
+    window.addEventListener('storage', handleStorage);
+    window.addEventListener(SUPPORT_UPDATED_EVENT, handleSupportUpdated);
+
+    return () => {
+      window.removeEventListener('storage', handleStorage);
+      window.removeEventListener(SUPPORT_UPDATED_EVENT, handleSupportUpdated);
+    };
+  }, [isLoggedIn, isOpen, sessionUserEmail]);
 
   // Auto-paste prefill message when opened
   useEffect(() => {
@@ -78,6 +144,17 @@ export default function ChatWidget({ prefillMessage }: { prefillMessage?: string
   const handleSend = () => {
     const text = input.trim();
     if (!text) return;
+
+    if (isLoggedIn && sessionUserEmail) {
+      appendConversationMessage({
+        userName: sessionUserName,
+        userEmail: sessionUserEmail,
+        sender: 'user',
+        text,
+      });
+      setInput('');
+      return;
+    }
 
     const userMsg: Message = { id: Date.now(), from: 'user', text, time: nowTime() };
     setMessages(prev => [...prev, userMsg]);
@@ -130,6 +207,10 @@ export default function ChatWidget({ prefillMessage }: { prefillMessage?: string
     setIsOpen((current) => !current);
     setUnread(0);
   };
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <>

@@ -182,6 +182,7 @@ export default function Navbar() {
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('userRole');
     localStorage.removeItem('userName');
+    localStorage.removeItem('userEmail');
 
     const nextIsLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
     const frame = window.requestAnimationFrame(() => {
@@ -237,9 +238,11 @@ export default function Navbar() {
     sessionStorage.removeItem('isLoggedIn');
     sessionStorage.removeItem('userRole');
     sessionStorage.removeItem('userName');
+    sessionStorage.removeItem('userEmail');
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('userRole');
     localStorage.removeItem('userName');
+    localStorage.removeItem('userEmail');
     setIsLoggedIn(false);
     setShowMobileMenu(false);
     setShowProfileMenu(false);

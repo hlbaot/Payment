@@ -38,6 +38,10 @@ export default function LoginPage() {
         matchedUser?.userName ?? 'John Doe'
       );
       sessionStorage.setItem(
+        'userEmail',
+        matchedUser?.email ?? fakeUsers.find((user) => user.role === 'user')?.email ?? 'user@kinetic.com'
+      );
+      sessionStorage.setItem(
         'walletBalance',
         String(matchedUser?.walletBalance ?? fakeUsers.find((user) => user.role === 'user')?.walletBalance ?? 0)
       );
@@ -58,6 +62,7 @@ export default function LoginPage() {
     sessionStorage.setItem('isLoggedIn', 'true');
     sessionStorage.setItem('userRole', selectedDemo.role);
     sessionStorage.setItem('userName', selectedDemo.userName);
+    sessionStorage.setItem('userEmail', selectedDemo.email);
     sessionStorage.setItem('walletBalance', String(selectedDemo.walletBalance));
 
     router.push(selectedDemo.destination);

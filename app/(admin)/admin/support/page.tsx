@@ -13,7 +13,7 @@ export default function AdminSupportPage() {
       searchValue={search}
       onSearchChange={setSearch}
     >
-      <SharedSupportInbox />
+      <SharedSupportInbox mode="messages" />
     </AdminScaffold>
   );
 }

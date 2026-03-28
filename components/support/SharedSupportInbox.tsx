@@ -1,175 +1,52 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useI18n } from '@/components/I18nProvider';
+import {
+  createDepositRequest,
+  DEPOSITS_UPDATED_EVENT,
+  formatUsd,
+  getWalletBalance,
+  loadDepositRequests,
+  loadSupportConversations,
+  saveSupportConversations,
+  SUPPORT_UPDATED_EVENT,
+  type SupportConversation,
+} from '@/data/fake/runtime-store';
 
 type ConversationFilter = 'all' | 'unread' | 'resolved';
 
-type SupportMessage = {
-  id: string;
-  sender: 'user' | 'supporter';
-  text: string;
-  time: string;
+type SharedSupportInboxProps = {
+  mode?: 'messages' | 'operations' | 'full';
 };
 
-type SupportConversation = {
-  id: string;
-  userName: string;
-  userCode: string;
-  avatarSeed: string;
-  preview: string;
-  time: string;
-  status: 'Open' | 'Unread' | 'Resolved';
-  tier: 'Premium' | 'Platinum' | 'Standard';
-  online: boolean;
-  recentOrders: Array<{
-    label: string;
-    orderId: string;
-    amount: string;
-  }>;
-  recentDeposits: Array<{
-    label: string;
-    amount: string;
-    status: string;
-  }>;
-  notes: string[];
-  messages: SupportMessage[];
-};
-
-const STORAGE_KEY = 'shared-support-conversations';
-
-const initialConversations: SupportConversation[] = [
-  {
-    id: 'conv-1',
-    userName: 'John Doe',
-    userCode: 'ID: 8829-XJ2',
-    avatarSeed: 'john-doe',
-    preview: 'Deposit ID #D-99231 has been pending for over 24 hours.',
-    time: '14:22',
-    status: 'Unread',
-    tier: 'Premium',
-    online: true,
-    recentOrders: [
-      { label: 'Apple Store Purchase', orderId: '#ORD-0922', amount: '$1,499.00' },
-      { label: 'Cloud Hosting Monthly', orderId: '#ORD-0811', amount: '$89.00' },
-    ],
-    recentDeposits: [
-      { label: 'Wire Transfer', amount: '$5,000.00', status: 'Pending' },
-    ],
-    notes: ['Priority customer. Requested same-day follow-up before 9 PM.'],
-    messages: [
-      {
-        id: 'm-1',
-        sender: 'user',
-        text: 'Hello, I’m checking on the status of my deposit ID #D-99231. It has been pending for over 24 hours now. Is there an issue?',
-        time: '14:18',
-      },
-      {
-        id: 'm-2',
-        sender: 'supporter',
-        text: 'Hi John! I’m looking into this for you right now. Just a moment while I pull up your account details and transaction history.',
-        time: '14:20',
-      },
-      {
-        id: 'm-3',
-        sender: 'user',
-        text: 'Thank you for the quick update. I’m traveling and need those funds cleared by tonight if possible.',
-        time: '14:22',
-      },
-    ],
-  },
-  {
-    id: 'conv-2',
-    userName: 'Elena Rodriguez',
-    userCode: 'ID: 5512-ZB8',
-    avatarSeed: 'elena-rodriguez',
-    preview: 'I need help with my credit card authorization.',
-    time: '09:15',
-    status: 'Open',
-    tier: 'Standard',
-    online: false,
-    recentOrders: [
-      { label: 'Card Purchase', orderId: '#ORD-0671', amount: '$320.00' },
-    ],
-    recentDeposits: [],
-    notes: ['Identity refresh was requested before retrying the card deposit.'],
-    messages: [
-      {
-        id: 'm-4',
-        sender: 'user',
-        text: 'I need help with my credit card authorization. The deposit keeps failing at the last step.',
-        time: '09:02',
-      },
-      {
-        id: 'm-5',
-        sender: 'supporter',
-        text: 'I can help with that. Please give me a second to confirm whether your authorization lock has been cleared.',
-        time: '09:15',
-      },
-    ],
-  },
-  {
-    id: 'conv-3',
-    userName: 'Marcus Sterling',
-    userCode: 'ID: 7710-LQ1',
-    avatarSeed: 'marcus-sterling',
-    preview: 'The wire transfer was successful. Close the ticket please.',
-    time: 'Yesterday',
-    status: 'Resolved',
-    tier: 'Platinum',
-    online: false,
-    recentOrders: [
-      { label: 'Treasury Transfer', orderId: '#ORD-0991', amount: '$12,400.00' },
-    ],
-    recentDeposits: [
-      { label: 'Wire Transfer', amount: '$12,400.00', status: 'Completed' },
-    ],
-    notes: ['Resolved after wire confirmation from operations.'],
-    messages: [
-      {
-        id: 'm-6',
-        sender: 'user',
-        text: 'The wire transfer was successful. You can close the ticket now.',
-        time: 'Yesterday',
-      },
-    ],
-  },
-];
-
-function loadSharedConversations() {
-  if (typeof window === 'undefined') return initialConversations;
-
-  const raw = window.localStorage.getItem(STORAGE_KEY);
-  if (!raw) return initialConversations;
-
-  try {
-    const parsed = JSON.parse(raw) as SupportConversation[];
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : initialConversations;
-  } catch {
-    return initialConversations;
-  }
-}
-
-export default function SharedSupportInbox() {
+export default function SharedSupportInbox({ mode = 'full' }: SharedSupportInboxProps) {
   const { t } = useI18n();
   const [conversationSearch, setConversationSearch] = useState('');
   const [filter, setFilter] = useState<ConversationFilter>('all');
-  const [conversations, setConversations] = useState<SupportConversation[]>(initialConversations);
-  const [selectedId, setSelectedId] = useState(initialConversations[0].id);
+  const [conversations, setConversations] = useState<SupportConversation[]>([]);
+  const [selectedId, setSelectedId] = useState('');
   const [reply, setReply] = useState('');
   const [noteDraft, setNoteDraft] = useState('');
+  const [depositAmount, setDepositAmount] = useState('');
+  const [pendingDepositCount, setPendingDepositCount] = useState(0);
+  const [currentRole, setCurrentRole] = useState<'admin' | 'supporter' | 'user' | ''>('');
 
   const isSaving = useRef(false);
 
   useEffect(() => {
-    setConversations(loadSharedConversations());
+    const initialData = loadSupportConversations();
+    setConversations(initialData);
+    setSelectedId((current) => current || initialData[0]?.id || '');
+    setCurrentRole((sessionStorage.getItem('userRole') as 'admin' | 'supporter' | 'user' | null) ?? '');
   }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
     isSaving.current = true;
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(conversations));
+    saveSupportConversations(conversations);
     // Use setTimeout to reset the flag after the current event loop,
     // so any dispatched events within this tick are ignored
     setTimeout(() => { isSaving.current = false; }, 0);
@@ -179,15 +56,30 @@ export default function SharedSupportInbox() {
     if (typeof window === 'undefined') return undefined;
 
     const handleStorage = (event: StorageEvent) => {
-      if (event.key === STORAGE_KEY) {
-        setConversations(loadSharedConversations());
+      if (event.key === 'shared-support-conversations') {
+        setConversations(loadSupportConversations());
       }
     };
 
+    const handleSupportUpdated = () => {
+      if (isSaving.current) return;
+      setConversations(loadSupportConversations());
+    };
+
+    const handleDepositUpdated = () => {
+      setPendingDepositCount(loadDepositRequests().filter((request) => request.status === 'Pending').length);
+      setConversations(loadSupportConversations());
+    };
+
     window.addEventListener('storage', handleStorage);
+    window.addEventListener(SUPPORT_UPDATED_EVENT, handleSupportUpdated);
+    window.addEventListener(DEPOSITS_UPDATED_EVENT, handleDepositUpdated);
+    setPendingDepositCount(loadDepositRequests().filter((request) => request.status === 'Pending').length);
 
     return () => {
       window.removeEventListener('storage', handleStorage);
+      window.removeEventListener(SUPPORT_UPDATED_EVENT, handleSupportUpdated);
+      window.removeEventListener(DEPOSITS_UPDATED_EVENT, handleDepositUpdated);
     };
   }, []);
 
@@ -213,8 +105,7 @@ export default function SharedSupportInbox() {
 
   const selectedConversation =
     conversations.find((conversation) => conversation.id === selectedId) ??
-    conversations[0] ??
-    initialConversations[0];
+    conversations[0];
 
   const handleSelectConversation = (conversationId: string) => {
     setSelectedId(conversationId);
@@ -288,6 +179,28 @@ export default function SharedSupportInbox() {
     );
   };
 
+  const handleCreateDepositRequest = () => {
+    const nextAmount = Number(depositAmount.replace(/[^0-9.]/g, ''));
+    if (!selectedConversation || !Number.isFinite(nextAmount) || nextAmount <= 0) return;
+
+    createDepositRequest({
+      conversationId: selectedConversation.id,
+      userName: selectedConversation.userName,
+      userEmail: selectedConversation.userEmail,
+      amount: nextAmount,
+      method: 'Support Wallet Credit',
+      note: '',
+    });
+
+    setConversations(loadSupportConversations());
+    setPendingDepositCount(loadDepositRequests().filter((request) => request.status === 'Pending').length);
+    setDepositAmount('');
+  };
+
+  if (!selectedConversation) {
+    return null;
+  }
+
   const tierTone =
     selectedConversation.tier === 'Platinum'
       ? 'bg-[#0F6CBD] text-white'
@@ -302,8 +215,15 @@ export default function SharedSupportInbox() {
         ? t('supporter.tierPlatinum')
         : t('supporter.tierStandard');
 
+  const showChatPanel = mode === 'messages' || mode === 'full';
+  const showOperationsPanel = mode === 'operations' || mode === 'full';
+  const gridClassName =
+    showChatPanel && showOperationsPanel
+      ? 'xl:grid-cols-[320px_minmax(420px,1fr)_290px]'
+      : 'xl:grid-cols-[320px_minmax(520px,1fr)]';
+
   return (
-    <div className="grid min-h-[calc(100vh-81px)] grid-cols-1 xl:grid-cols-[320px_minmax(420px,1fr)_290px]">
+    <div className={`grid min-h-[calc(100vh-81px)] grid-cols-1 ${gridClassName}`}>
       <aside className="border-b border-r border-gray-200 bg-white xl:border-b-0">
         <div className="border-b border-gray-100 px-5 py-5">
           <label className="relative block">
@@ -322,26 +242,6 @@ export default function SharedSupportInbox() {
             />
           </label>
 
-          <div className="mt-4 flex flex-wrap gap-2">
-            {[
-              ['all', t('supporter.filterAll')],
-              ['unread', t('supporter.filterUnread')],
-              ['resolved', t('supporter.filterResolved')],
-            ].map(([value, label]) => (
-              <button
-                key={value}
-                type="button"
-                onClick={() => setFilter(value as ConversationFilter)}
-                className={`inline-flex min-h-[34px] items-center rounded-full px-4 text-[11px] font-black uppercase tracking-[0.14em] transition-colors ${
-                  filter === value
-                    ? 'bg-[#B45309] text-white'
-                    : 'bg-[#F3F5F8] text-[#64748B] hover:bg-[#EDEFF4]'
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
         </div>
 
         <div className="max-h-[calc(100vh-240px)] overflow-y-auto p-3">
@@ -408,6 +308,7 @@ export default function SharedSupportInbox() {
         </div>
       </aside>
 
+      {showChatPanel ? (
       <section className="flex min-h-[720px] flex-col border-b border-r border-gray-200 bg-white xl:border-b-0">
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-gray-100 px-6 py-5">
           <div className="flex items-center gap-4">
@@ -554,7 +455,9 @@ export default function SharedSupportInbox() {
           </div>
         </div>
       </section>
+      ) : null}
 
+      {showOperationsPanel ? (
       <aside className="bg-[#FCFCFD] p-6">
         <div className="rounded-[30px] border border-gray-100 bg-white p-6 shadow-[0_20px_50px_rgba(17,24,39,0.05)]">
           <div className="mx-auto flex h-[96px] w-[96px] items-center justify-center rounded-[28px] bg-[#F8FAFD] text-[28px] font-black text-[#64748B]">
@@ -570,93 +473,124 @@ export default function SharedSupportInbox() {
           <p className="mt-2 text-center text-[13px] font-medium text-[#94A3B8]">
             {selectedConversation.userCode}
           </p>
-          <div className={`mx-auto mt-5 inline-flex min-h-[34px] items-center rounded-full px-5 text-[11px] font-black uppercase tracking-[0.18em] ${tierTone}`}>
-            {getTierLabel(selectedConversation.tier)} {t('supporter.tier')}
-          </div>
-
-          <div className="mt-8">
-            <div className="mb-4 flex items-center justify-between">
-              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#A0AEC0]">
-                {t('supporter.recentOrders')}
-              </p>
-              <button type="button" className="text-[12px] font-black uppercase tracking-[0.16em] text-primary">
-                {t('supporter.viewAll')}
-              </button>
-            </div>
-            <div className="space-y-3">
-              {selectedConversation.recentOrders.map((order) => (
-                <div key={order.orderId} className="rounded-2xl border border-gray-100 bg-[#FCFCFD] px-4 py-3">
-                  <p className="text-[14px] font-bold text-gray-900">{order.label}</p>
-                  <div className="mt-2 flex items-center justify-between gap-4 text-[13px] font-medium text-[#94A3B8]">
-                    <span>{order.orderId}</span>
-                    <span className="font-black text-gray-900">{order.amount}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="mt-8">
-            <p className="mb-4 text-[11px] font-black uppercase tracking-[0.22em] text-[#A0AEC0]">
-              {t('supporter.recentDeposits')}
-            </p>
-            <div className="space-y-3">
-              {selectedConversation.recentDeposits.length > 0 ? (
-                selectedConversation.recentDeposits.map((deposit) => (
-                  <div key={`${deposit.label}-${deposit.amount}`} className="rounded-2xl border border-gray-100 bg-[#FCFCFD] px-4 py-3">
-                    <div className="flex items-center justify-between gap-4">
-                      <p className="text-[14px] font-bold text-gray-900">{deposit.label}</p>
-                      <span className="text-[13px] font-black text-gray-900">{deposit.amount}</span>
-                    </div>
-                    <p className="mt-2 text-[12px] font-black uppercase tracking-[0.16em] text-primary">
-                      {deposit.status}
-                    </p>
-                  </div>
-                ))
-              ) : (
-                <div className="rounded-2xl border border-dashed border-gray-200 px-4 py-6 text-center text-[13px] font-medium text-[#94A3B8]">
-                  {t('supporter.noDeposits')}
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="mt-8">
-            <p className="mb-4 text-[11px] font-black uppercase tracking-[0.22em] text-[#A0AEC0]">
-              {t('supporter.supportNotes')}
-            </p>
-            <textarea
-              value={noteDraft}
-              onChange={(event) => setNoteDraft(event.target.value)}
-              placeholder={t('supporter.notePlaceholder')}
-              className="min-h-[140px] w-full rounded-[22px] border border-gray-100 bg-[#F8FAFD] px-4 py-4 text-[14px] font-medium text-gray-800 outline-none placeholder:text-[#B0B8C6] focus:border-primary"
-            />
-            <button
-              type="button"
-              onClick={handleAddNote}
-              className="mt-4 inline-flex min-h-[42px] w-full items-center justify-center rounded-2xl border border-[#E8EDF4] bg-white px-4 text-[13px] font-bold text-[#52637A] transition-colors hover:bg-gray-50"
+          {currentRole === 'admin' ? (
+            <Link
+              href="/admin/deposits"
+              className="mt-6 inline-flex min-h-[40px] w-full items-center justify-center rounded-2xl border border-[#FAD4B8] bg-[#FFF8F2] px-4 text-[12px] font-black uppercase tracking-[0.16em] text-primary transition-colors hover:bg-[#FFF3E8]"
             >
-              {t('supporter.saveNote')}
-            </button>
+              Open Deposit Queue
+            </Link>
+          ) : null}
 
-            <div className="mt-4 space-y-3">
-              {selectedConversation.notes.map((note) => (
-                <div key={note} className="rounded-2xl bg-[#FCFCFD] px-4 py-3 text-[13px] font-medium leading-6 text-[#64748B]">
-                  {note}
+          <div className="mt-8">
+            <p className="mb-4 text-[11px] font-black uppercase tracking-[0.22em] text-[#A0AEC0]">
+              Create Deposit Order
+            </p>
+            <div className="overflow-hidden rounded-[28px] border border-[#F6D9C4] bg-gradient-to-br from-[#FFF8F2] via-white to-[#FFF4EA] shadow-[0_18px_40px_rgba(255,102,0,0.06)]">
+              <div className="space-y-5 px-5 py-5">
+                <div className="rounded-[22px] bg-white px-4 py-4 shadow-sm">
+                  <p className="text-[11px] font-black uppercase tracking-[0.16em] text-primary">
+                    Current Wallet Balance
+                  </p>
+                  <h3 className="mt-2 text-[22px] font-black tracking-tight text-gray-900">
+                    {formatUsd(getWalletBalance(selectedConversation.userEmail))}
+                  </h3>
+                  <p className="mt-1 text-[13px] font-medium text-[#7B879C]">
+                    {selectedConversation.userName}
+                  </p>
                 </div>
-              ))}
+
+                <label className="block">
+                  <span className="text-[11px] font-black uppercase tracking-[0.16em] text-[#94A3B8]">
+                    Amount To Add Into Wallet
+                  </span>
+                  <input
+                    type="text"
+                    value={depositAmount}
+                    onChange={(event) => setDepositAmount(event.target.value)}
+                    placeholder="5000"
+                    className="mt-2 h-[58px] w-full rounded-[22px] border border-[#F1D7C0] bg-white px-5 text-[26px] font-black tracking-tight text-gray-900 outline-none placeholder:text-[#C4CCD8] focus:border-primary"
+                  />
+                </label>
+
+                <button
+                  type="button"
+                  onClick={handleCreateDepositRequest}
+                  disabled={Number(depositAmount.replace(/[^0-9.]/g, '')) <= 0}
+                  className="inline-flex min-h-[50px] w-full items-center justify-center rounded-[22px] bg-[#FF7A1A] px-4 text-[13px] font-black uppercase tracking-[0.18em] text-white shadow-[0_18px_34px_rgba(255,122,26,0.28)] transition-all hover:-translate-y-0.5 hover:bg-[#FF8C38] disabled:translate-y-0 disabled:cursor-not-allowed disabled:bg-[#FFC38F] disabled:text-white disabled:shadow-[0_12px_24px_rgba(255,122,26,0.16)]"
+                >
+                  Submit
+                </button>
+              </div>
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={handleResolveConversation}
-            className="mt-8 inline-flex min-h-[50px] w-full items-center justify-center rounded-2xl border border-[#E8EDF4] bg-[#FCFCFD] px-5 text-[13px] font-black uppercase tracking-[0.18em] text-[#94A3B8] transition-colors hover:bg-gray-50"
-          >
-            {t('supporter.resolveConversation')}
-          </button>
+          {mode !== 'operations' ? (
+            <>
+              <div className="mt-8">
+                <p className="mb-4 text-[11px] font-black uppercase tracking-[0.22em] text-[#A0AEC0]">
+                  {t('supporter.recentDeposits')}
+                </p>
+                <div className="space-y-3">
+                  {selectedConversation.recentDeposits.length > 0 ? (
+                    selectedConversation.recentDeposits.map((deposit) => (
+                      <div key={`${deposit.label}-${deposit.amount}`} className="rounded-2xl border border-gray-100 bg-[#FCFCFD] px-4 py-3">
+                        <div className="flex items-center justify-between gap-4">
+                          <p className="text-[14px] font-bold text-gray-900">{deposit.label}</p>
+                          <span className="text-[13px] font-black text-gray-900">{deposit.amount}</span>
+                        </div>
+                        <p className="mt-2 text-[12px] font-black uppercase tracking-[0.16em] text-primary">
+                          {deposit.status}
+                        </p>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="rounded-2xl border border-dashed border-gray-200 px-4 py-6 text-center text-[13px] font-medium text-[#94A3B8]">
+                      {t('supporter.noDeposits')}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="mt-8">
+                <p className="mb-4 text-[11px] font-black uppercase tracking-[0.22em] text-[#A0AEC0]">
+                  {t('supporter.supportNotes')}
+                </p>
+                <textarea
+                  value={noteDraft}
+                  onChange={(event) => setNoteDraft(event.target.value)}
+                  placeholder={t('supporter.notePlaceholder')}
+                  className="min-h-[140px] w-full rounded-[22px] border border-gray-100 bg-[#F8FAFD] px-4 py-4 text-[14px] font-medium text-gray-800 outline-none placeholder:text-[#B0B8C6] focus:border-primary"
+                />
+                <button
+                  type="button"
+                  onClick={handleAddNote}
+                  className="mt-4 inline-flex min-h-[42px] w-full items-center justify-center rounded-2xl border border-[#E8EDF4] bg-white px-4 text-[13px] font-bold text-[#52637A] transition-colors hover:bg-gray-50"
+                >
+                  {t('supporter.saveNote')}
+                </button>
+
+                <div className="mt-4 space-y-3">
+                  {selectedConversation.notes.map((note) => (
+                    <div key={note} className="rounded-2xl bg-[#FCFCFD] px-4 py-3 text-[13px] font-medium leading-6 text-[#64748B]">
+                      {note}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleResolveConversation}
+                className="mt-8 inline-flex min-h-[50px] w-full items-center justify-center rounded-2xl border border-[#E8EDF4] bg-[#FCFCFD] px-5 text-[13px] font-black uppercase tracking-[0.18em] text-[#94A3B8] transition-colors hover:bg-gray-50"
+              >
+                {t('supporter.resolveConversation')}
+              </button>
+            </>
+          ) : null}
         </div>
       </aside>
+      ) : null}
     </div>
   );
 }
