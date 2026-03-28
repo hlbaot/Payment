@@ -11,7 +11,13 @@ import { useI18n } from '@/components/I18nProvider';
 const RIA_LOGO_SRC =
   'https://www.riamoneytransfer.com/_next/static/media/ria-logo.94de361a.svg';
 
-const marketingLinks = [
+type NavLink = {
+  href: string;
+  label?: string;
+  labelKey?: string;
+};
+
+const marketingLinks: NavLink[] = [
   { href: '/', labelKey: 'nav.moneyTransfers' },
   { href: '/find-a-location', labelKey: 'nav.findLocation' },
   { href: '/orders', labelKey: 'nav.trackTransfer' },
@@ -19,7 +25,7 @@ const marketingLinks = [
   { href: '/counter-market', label: 'Counter' },
 ];
 
-const accountLinks = [
+const accountLinks: NavLink[] = [
   // { href: '/orders', label: 'Orders' },
   // { href: '/wallet', label: 'Wallet' },
   // { href: '/settings', label: 'Settings' },
