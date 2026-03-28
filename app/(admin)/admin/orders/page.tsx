@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import AdminScaffold from '@/components/admin/AdminScaffold';
+import { useI18n } from '@/components/I18nProvider';
 
 type AdminOrder = {
   id: string;
@@ -54,6 +55,36 @@ const initialOrders: AdminOrder[] = [
     wallet: '$9,400.00',
     orderName: 'UK Bill Payment',
     commission: '$46.50',
+    status: 'Pending',
+  },
+  {
+    id: '#TXN-93774',
+    time: 'Oct 18, 11:25',
+    user: 'Daniel Brooks',
+    email: 'd.brooks@finexa.io',
+    wallet: '$27,300.00',
+    orderName: 'Corporate Settlement',
+    commission: '$318.00',
+    status: 'Pending',
+  },
+  {
+    id: '#TXN-93712',
+    time: 'Oct 17, 18:40',
+    user: 'Mina Carter',
+    email: 'm.carter@lunex.co',
+    wallet: '$41,750.00',
+    orderName: 'Priority Remittance',
+    commission: '$522.00',
+    status: 'Pending',
+  },
+  {
+    id: '#TXN-93644',
+    time: 'Oct 17, 10:05',
+    user: 'Owen Hughes',
+    email: 'o.hughes@northgate.com',
+    wallet: '$13,920.00',
+    orderName: 'Invoice Transfer',
+    commission: '$96.40',
     status: 'Pending',
   },
 ];
@@ -121,15 +152,76 @@ const orderDetailsById: Record<string, OrderDetailModalData[]> = {
       ],
     },
   ],
+  '#TXN-93774': [
+    {
+      counterName: 'Counter 1',
+      items: [
+        { id: 'D1', orderLabel: 'Corporate Settlement', commission: '$180.00' },
+      ],
+    },
+    {
+      counterName: 'Counter 2',
+      items: [
+        { id: 'D2', orderLabel: 'Escrow Release', commission: '$88.00' },
+        { id: 'D3', orderLabel: 'Compliance Review', commission: '$50.00' },
+      ],
+    },
+    {
+      counterName: 'Counter 3',
+      items: [],
+    },
+  ],
+  '#TXN-93712': [
+    {
+      counterName: 'Counter 1',
+      items: [
+        { id: 'E1', orderLabel: 'Priority Remittance', commission: '$240.00' },
+      ],
+    },
+    {
+      counterName: 'Counter 2',
+      items: [
+        { id: 'E2', orderLabel: 'Partner Settlement', commission: '$160.00' },
+      ],
+    },
+    {
+      counterName: 'Counter 3',
+      items: [
+        { id: 'E3', orderLabel: 'FX Reserve', commission: '$122.00' },
+      ],
+    },
+  ],
+  '#TXN-93644': [
+    {
+      counterName: 'Counter 1',
+      items: [
+        { id: 'F1', orderLabel: 'Invoice Transfer', commission: '$44.00' },
+      ],
+    },
+    {
+      counterName: 'Counter 2',
+      items: [
+        { id: 'F2', orderLabel: 'Document Verification', commission: '$22.40' },
+        { id: 'F3', orderLabel: 'Clearing Fee', commission: '$30.00' },
+      ],
+    },
+    {
+      counterName: 'Counter 3',
+      items: [],
+    },
+  ],
 };
 
 export default function AdminOrdersPage() {
+  const { t } = useI18n();
   const [search, setSearch] = useState('');
   const [orders, setOrders] = useState(initialOrders);
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'Approved' | 'Rejected'>('ALL');
   const [activeOrderId, setActiveOrderId] = useState<string | null>(null);
   const [detailData, setDetailData] = useState(orderDetailsById);
   const [highlightedWalletId, setHighlightedWalletId] = useState<string | null>(null);
+  const [editingWalletId, setEditingWalletId] = useState<string | null>(null);
+  const [walletDraft, setWalletDraft] = useState('');
 
   const parseCurrency = (value: string) => Number(value.replace(/[^0-9.]+/g, '')) || 0;
   const formatCurrency = (value: number) =>
@@ -155,6 +247,16 @@ export default function AdminOrdersPage() {
       current.map((order) =>
         order.id === orderId
           ? { ...order, wallet: formatCurrency(parseCurrency(order.wallet) + amount) }
+          : order
+      )
+    );
+  };
+
+  const setOrderWallet = (orderId: string, amount: number) => {
+    setOrders((current) =>
+      current.map((order) =>
+        order.id === orderId
+          ? { ...order, wallet: formatCurrency(amount) }
           : order
       )
     );
@@ -219,28 +321,47 @@ export default function AdminOrdersPage() {
     updateStatus([orderId], 'Rejected');
   };
 
+  const handleStartWalletEdit = (orderId: string, currentWallet: string) => {
+    setEditingWalletId(orderId);
+    setWalletDraft(parseCurrency(currentWallet).toString());
+  };
+
+  const handleCancelWalletEdit = () => {
+    setEditingWalletId(null);
+    setWalletDraft('');
+  };
+
+  const handleSaveWalletEdit = (orderId: string) => {
+    setOrderWallet(orderId, parseCurrency(walletDraft));
+    setHighlightedWalletId(orderId);
+    setEditingWalletId(null);
+    setWalletDraft('');
+  };
+
   const activeOrderDetails = activeOrderId
     ? (detailData[activeOrderId] ?? []).filter((counter) => counter.items.length > 0)
     : [];
   const activeOrderCommissionTotal = activeOrderId ? getOrderCommissionTotal(activeOrderId) : 0;
   const getDisplayedCommissionTotal = (order: AdminOrder) =>
     order.status === 'Approved' ? 0 : getOrderCommissionTotal(order.id);
+  const getStatusLabel = (status: AdminOrder['status']) =>
+    status === 'Approved'
+      ? t('adminOrders.accepted')
+      : status === 'Rejected'
+        ? t('adminOrders.rejected')
+        : t('adminOrders.pending');
   const activeOrderStatus = activeOrderId
     ? orders.find((order) => order.id === activeOrderId)?.status ?? 'Pending'
     : 'Pending';
 
   return (
     <AdminScaffold
-      searchPlaceholder="Search admin records..."
+      searchPlaceholder={t('adminOrders.searchPlaceholder')}
       searchValue={search}
       onSearchChange={setSearch}
     >
-      <div className="mx-auto max-w-[1280px] space-y-8">
-        <div>
-          <h2 className="text-[44px] font-black tracking-tight text-gray-900">Confirm Pending Orders</h2>
-        </div>
-
-        <div className="overflow-hidden rounded-[28px] bg-white shadow-[0_18px_40px_rgba(17,24,39,0.05)]">
+      <div className="flex w-full justify-center">
+        <div className="w-full max-w-[1280px] overflow-hidden rounded-[28px] bg-white shadow-[0_18px_40px_rgba(17,24,39,0.05)]">
           <div className="flex flex-col gap-4 border-b border-gray-100 px-6 py-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex flex-wrap items-center gap-3">
               <button
@@ -252,7 +373,7 @@ export default function AdminOrdersPage() {
                     : 'bg-white text-[#94A3B8] hover:bg-[#F8FAFC]'
                 }`}
               >
-                Waitting
+                {t('adminOrders.waiting')}
               </button>
               <button
                 type="button"
@@ -268,7 +389,7 @@ export default function AdminOrdersPage() {
                   <line x1="15" y1="9" x2="9" y2="15" />
                   <line x1="9" y1="9" x2="15" y2="15" />
                 </svg>
-                Reject
+                {t('adminOrders.reject')}
               </button>
               <button
                 type="button"
@@ -283,12 +404,12 @@ export default function AdminOrdersPage() {
                   <circle cx="12" cy="12" r="10" />
                   <polyline points="16 9 11 14 8 11" />
                 </svg>
-                Accept
+                {t('adminOrders.accept')}
               </button>
             </div>
 
             <p className="text-[14px] font-medium text-[#8EA0BC]">
-              Confirmed orders update commission automatically
+              {t('adminOrders.helper')}
             </p>
           </div>
 
@@ -296,12 +417,12 @@ export default function AdminOrdersPage() {
             <table className="min-w-full">
               <thead className="bg-[#FBFCFE] text-left">
                 <tr className="text-[12px] font-black uppercase tracking-[0.16em] text-[#8EA0BC]">
-                  <th className="px-6 py-5">Email</th>
-                  <th className="px-6 py-5">Wallet</th>
-                  <th className="px-6 py-5">Order Name</th>
-                  <th className="px-6 py-5">Hoa Hong Cua Don</th>
-                  <th className="px-6 py-5">Status</th>
-                  <th className="px-6 py-5 text-right">Action</th>
+                  <th className="px-6 py-5">{t('adminOrders.email')}</th>
+                  <th className="px-6 py-5">{t('adminOrders.wallet')}</th>
+                  <th className="px-6 py-5">{t('adminOrders.orderName')}</th>
+                  <th className="px-6 py-5">{t('adminOrders.commission')}</th>
+                  <th className="px-6 py-5">{t('adminOrders.status')}</th>
+                  <th className="px-6 py-5 text-right">{t('adminOrders.action')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -312,15 +433,44 @@ export default function AdminOrdersPage() {
                       <p className="mt-1 text-[12px] font-medium text-[#9AA7BD]">{order.user}</p>
                     </td>
                     <td className="px-6 py-5">
-                      <span
-                        className={`inline-flex rounded-xl px-3 py-2 text-[16px] font-black transition-all duration-300 ${
-                          highlightedWalletId === order.id
-                            ? 'bg-[#DCFCE7] text-[#16A34A] shadow-[0_0_0_6px_rgba(34,197,94,0.12)]'
-                            : 'text-gray-900'
-                        }`}
-                      >
-                        {order.wallet}
-                      </span>
+                      {editingWalletId === order.id ? (
+                        <div className="flex flex-col items-start gap-3">
+                          <input
+                            type="text"
+                            value={walletDraft}
+                            onChange={(event) => setWalletDraft(event.target.value)}
+                            className="h-[44px] w-[180px] rounded-xl border border-[#E5E7EB] bg-white px-4 text-[16px] font-bold text-gray-900 outline-none transition-colors focus:border-primary"
+                          />
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={handleCancelWalletEdit}
+                              className="inline-flex min-h-[34px] items-center justify-center rounded-lg bg-[#F3F4F6] px-3 text-[12px] font-bold text-[#64748B] transition-colors hover:bg-[#E5E7EB]"
+                            >
+                              {t('common.cancel')}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleSaveWalletEdit(order.id)}
+                              className="inline-flex min-h-[34px] items-center justify-center rounded-lg bg-primary px-3 text-[12px] font-bold text-white transition-colors hover:opacity-90"
+                            >
+                              {t('common.save')}
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => handleStartWalletEdit(order.id, order.wallet)}
+                          className={`inline-flex rounded-xl px-3 py-2 text-[16px] font-black transition-all duration-300 hover:bg-[#F8FAFC] ${
+                            highlightedWalletId === order.id
+                              ? 'bg-[#DCFCE7] text-[#16A34A] shadow-[0_0_0_6px_rgba(34,197,94,0.12)]'
+                              : 'text-gray-900'
+                          }`}
+                        >
+                          {order.wallet}
+                        </button>
+                      )}
                     </td>
                     <td className="px-6 py-5">
                       <div className="flex flex-col items-start gap-2">
@@ -329,7 +479,7 @@ export default function AdminOrdersPage() {
                           onClick={() => setActiveOrderId(order.id)}
                           className="inline-flex min-h-[36px] items-center justify-center rounded-xl bg-[#F4F5F7] px-4 text-[12px] font-bold uppercase tracking-[0.12em] text-gray-700 transition-colors hover:bg-[#EBECEF]"
                         >
-                          View Detail
+                          {t('adminOrders.viewDetail')}
                         </button>
                       </div>
                     </td>
@@ -346,7 +496,7 @@ export default function AdminOrdersPage() {
                               : 'bg-[#FFF4DB] text-[#D97706]'
                         }`}
                       >
-                        {order.status}
+                        {getStatusLabel(order.status)}
                       </span>
                     </td>
                     <td className="px-6 py-5 text-right">
@@ -362,7 +512,7 @@ export default function AdminOrdersPage() {
                             <line x1="15" y1="9" x2="9" y2="15" />
                             <line x1="9" y1="9" x2="15" y2="15" />
                           </svg>
-                          Reject
+                          {t('adminOrders.reject')}
                         </button>
                         <button
                           type="button"
@@ -374,7 +524,7 @@ export default function AdminOrdersPage() {
                             <circle cx="12" cy="12" r="10" />
                             <polyline points="16 9 11 14 8 11" />
                           </svg>
-                          Accept
+                          {t('adminOrders.accept')}
                         </button>
                       </div>
                     </td>
@@ -386,7 +536,7 @@ export default function AdminOrdersPage() {
 
           <div className="flex flex-col gap-4 border-t border-gray-100 px-6 py-4 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-3">
-              <span className="text-[14px] font-medium text-[#63748C]">Rows per page:</span>
+              <span className="text-[14px] font-medium text-[#63748C]">{t('adminOrders.rowsPerPage')}</span>
               <span className="inline-flex h-10 min-w-[40px] items-center justify-center rounded-lg bg-[#F3F5F8] px-3 text-[14px] font-bold text-gray-700">25</span>
             </div>
             <div className="flex items-center gap-3 text-[15px] font-semibold text-[#52637A]">
@@ -411,13 +561,13 @@ export default function AdminOrdersPage() {
             <div className="w-full max-w-[1280px] rounded-[32px] bg-white shadow-[0_30px_80px_rgba(17,24,39,0.2)]">
               <div className="flex flex-col gap-4 border-b border-gray-100 px-8 py-6 lg:flex-row lg:items-center lg:justify-between">
                 <div>
-                  <h3 className="text-[28px] font-black tracking-tight text-gray-900">Order Detail</h3>
+                  <h3 className="text-[28px] font-black tracking-tight text-gray-900">{t('adminOrders.orderDetail')}</h3>
                   <p className="mt-1 text-[14px] font-medium text-[#8EA0BC]">{activeOrderId}</p>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="rounded-2xl bg-[#FFF7ED] px-5 py-3 text-right">
                     <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#F97316]">
-                      Tong Tien Hoa Hong
+                      {t('adminOrders.totalCommission')}
                     </p>
                     <p className="mt-1 text-[24px] font-black tracking-tight text-primary">
                       {formatCurrency(activeOrderCommissionTotal)}
@@ -450,7 +600,7 @@ export default function AdminOrdersPage() {
                         <h4 className="text-[20px] font-black tracking-tight text-gray-900">{counter.counterName}</h4>
                         <div className="rounded-xl bg-white px-3 py-2 text-right shadow-sm">
                           <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#94A3B8]">
-                            Tong HH
+                            {t('adminOrders.shortCommission')}
                           </p>
                           <p className="mt-1 text-[15px] font-black text-primary">
                             {formatCurrency(counterCommissionTotal)}
@@ -462,7 +612,7 @@ export default function AdminOrdersPage() {
                           counter.items.map((item) => (
                             <div key={item.id} className="rounded-2xl bg-white p-4 shadow-sm">
                               <p className="text-[15px] font-bold text-gray-900">{item.orderLabel}</p>
-                              <p className="mt-2 text-[13px] font-semibold text-primary">Hoa hồng: {item.commission}</p>
+                              <p className="mt-2 text-[13px] font-semibold text-primary">{t('adminOrders.itemCommission')}: {item.commission}</p>
                               <div className="mt-4 flex flex-wrap gap-3">
                                 <button
                                   type="button"
@@ -475,7 +625,7 @@ export default function AdminOrdersPage() {
                                     <line x1="15" y1="9" x2="9" y2="15" />
                                     <line x1="9" y1="9" x2="15" y2="15" />
                                   </svg>
-                                  Delete
+                                  {t('adminOrders.delete')}
                                 </button>
                               </div>
                             </div>
@@ -486,9 +636,9 @@ export default function AdminOrdersPage() {
                   );
                 }) : (
                   <div className="md:col-span-3 rounded-[28px] border border-dashed border-gray-200 bg-[#FBFCFE] px-6 py-12 text-center">
-                    <p className="text-[18px] font-black text-gray-900">No pending items left</p>
+                    <p className="text-[18px] font-black text-gray-900">{t('adminOrders.emptyTitle')}</p>
                     <p className="mt-2 text-[14px] font-medium text-[#94A3B8]">
-                      Tat ca don trong order nay da duoc xu ly.
+                      {t('adminOrders.emptyDesc')}
                     </p>
                   </div>
                 )}

@@ -307,7 +307,7 @@ export default function Navbar() {
   const renderGuestActions = (mobile = false) => (
     <div className={mobile ? 'site-mobile-menu__actions' : 'site-header__actions'}>
       {mobile ? (
-        <button type="button" className="site-chip" aria-label="Country selector">
+        <button type="button" className="site-chip" aria-label={t('nav.countrySelector')}>
           <span className="site-chip__flag" aria-hidden="true">
             <span className="site-chip__flag-inner site-chip__flag-inner--us" />
           </span>
@@ -324,7 +324,7 @@ export default function Navbar() {
           <button
             type="button"
             className={`site-chip${showCountryMenu ? ' is-open' : ''}`}
-            aria-label="Country selector"
+            aria-label={t('nav.countrySelector')}
             aria-haspopup="true"
             aria-expanded={showCountryMenu}
             onClick={() => setShowCountryMenu((current) => !current)}
@@ -339,7 +339,7 @@ export default function Navbar() {
           </button>
 
           {showCountryMenu ? (
-            <div className="site-country-menu" role="menu" aria-label="Choose country">
+            <div className="site-country-menu" role="menu" aria-label={t('nav.chooseCountry')}>
               <div className="site-country-menu__grid">
                 {countryOptions.map((country) => (
                   <button
@@ -364,7 +364,7 @@ export default function Navbar() {
       )}
 
       {mobile ? (
-        <button type="button" className="site-chip" aria-label="Language selector">
+        <button type="button" className="site-chip" aria-label={t('nav.languageSelector')}>
           <span className="site-chip__label">
             {locale === 'vi' ? t('nav.language.vietnamese') : t('nav.language.english')}
           </span>
@@ -380,7 +380,7 @@ export default function Navbar() {
           <button
             type="button"
             className={`site-chip${showLanguageMenu ? ' is-open' : ''}`}
-            aria-label="Language selector"
+            aria-label={t('nav.languageSelector')}
             aria-haspopup="true"
             aria-expanded={showLanguageMenu}
             onClick={() => setShowLanguageMenu((current) => !current)}
@@ -394,7 +394,7 @@ export default function Navbar() {
           </button>
 
           {showLanguageMenu ? (
-            <div className="site-language-menu" role="menu" aria-label="Choose language">
+            <div className="site-language-menu" role="menu" aria-label={t('nav.chooseLanguage')}>
               {(['en', 'vi'] as const).map((language) => (
                 <button
                   key={language}
@@ -414,7 +414,7 @@ export default function Navbar() {
       )}
 
       <Link href="/login" className="site-login-link">
-        Login
+        {t('nav.login')}
       </Link>
     </div>
   );
@@ -456,24 +456,24 @@ export default function Navbar() {
         {!mobile && showProfileMenu ? (
           <div className="site-profile-menu">
             <Link href="/orders" className="site-profile-menu__item">
-              View orders
+              {t('nav.viewOrders')}
             </Link>
             <Link href="/settings" className="site-profile-menu__item">
-              Account settings
+              {t('nav.accountSettings')}
             </Link>
             <button
               type="button"
               className="site-profile-menu__item site-profile-menu__item--danger"
               onClick={handleLogout}
             >
-              Logout
+              {t('admin.logout')}
             </button>
           </div>
         ) : null}
 
         {mobile ? (
           <button type="button" className="site-mobile-menu__logout" onClick={handleLogout}>
-            Logout
+            {t('admin.logout')}
           </button>
         ) : null}
       </div>
@@ -484,7 +484,7 @@ export default function Navbar() {
     return (
       <header className="site-header site-header--auth">
         <div className="site-header__inner site-header__inner--auth">
-          <Link href="/" className="site-brand" aria-label="Ria home">
+          <Link href="/" className="site-brand" aria-label={t('nav.homeAria')}>
             <img
               src={RIA_LOGO_SRC}
               alt="Ria"
@@ -492,7 +492,7 @@ export default function Navbar() {
             />
           </Link>
 
-          <Link href="/" className="site-auth-close" aria-label="Close login">
+          <Link href="/" className="site-auth-close" aria-label={t('nav.closeLogin')}>
             <CloseIcon />
           </Link>
         </div>
@@ -506,7 +506,7 @@ export default function Navbar() {
         <button
           type="button"
           className="site-nav-overlay"
-          aria-label="Close navigation overlay"
+          aria-label={t('nav.closeNavigationOverlay')}
           onClick={closeMenus}
         />
       ) : null}
@@ -520,7 +520,7 @@ export default function Navbar() {
             <Link
               href="/"
               className="site-brand"
-              aria-label="Ria home"
+              aria-label={t('nav.homeAria')}
               onMouseEnter={closeDropdownMenus}
             >
               <img
@@ -532,7 +532,7 @@ export default function Navbar() {
 
             <nav
               className="site-nav navbar-desktop-nav"
-              aria-label="Primary navigation"
+              aria-label={t('nav.primaryNavigation')}
             >
               {marketingLinks.map((link) => {
                 const isResourcesLink = link.href === '/documentation';
@@ -600,14 +600,14 @@ export default function Navbar() {
               className="site-mobile-app-link"
               onClick={closeMenus}
             >
-              Get the app
+              {t('nav.getApp')}
             </Link>
 
             <button
               type="button"
               className="site-menu-toggle"
               onClick={() => setShowMobileMenu((current) => !current)}
-              aria-label={showMobileMenu ? 'Close navigation menu' : 'Open navigation menu'}
+              aria-label={showMobileMenu ? t('nav.closeNavigationMenu') : t('nav.openNavigationMenu')}
               aria-expanded={showMobileMenu}
               aria-controls="site-mobile-menu"
             >
@@ -619,7 +619,7 @@ export default function Navbar() {
         {showTransfersMenu ? (
           <section
             className="site-transfers-menu"
-            aria-label="Money transfers menu"
+            aria-label={t('nav.moneyTransfersMenu')}
             onMouseEnter={clearTransfersCloseTimer}
             onMouseLeave={closeDropdownMenus}
           >
@@ -668,7 +668,7 @@ export default function Navbar() {
         {showResourcesMenu ? (
           <section
             className="site-resources-menu"
-            aria-label="Resources menu"
+            aria-label={t('nav.resourcesMenu')}
             onMouseEnter={clearResourcesCloseTimer}
             onMouseLeave={closeDropdownMenus}
           >
@@ -721,7 +721,7 @@ export default function Navbar() {
         className={`site-mobile-menu${showMobileMenu ? ' is-open' : ''}`}
       >
         <div className="site-mobile-menu__panel">
-          <nav className="site-mobile-menu__links" aria-label="Mobile navigation">
+          <nav className="site-mobile-menu__links" aria-label={t('nav.mobileNavigation')}>
             {marketingLinks.map((link) => {
               const isActive =
                 link.href === '/'
@@ -764,7 +764,7 @@ export default function Navbar() {
           ) : (
             <div className="site-mobile-menu__footer">
               <Link href="/login" className="site-mobile-menu__login" onClick={closeMenus}>
-                Login
+                {t('nav.login')}
               </Link>
             </div>
           )}

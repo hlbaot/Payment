@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { useI18n } from '@/components/I18nProvider';
 import { usePathname, useRouter } from 'next/navigation';
 import type { ReactNode } from 'react';
 
@@ -15,46 +17,23 @@ export default function SupporterScaffold({
   children,
   searchValue,
   onSearchChange,
-  searchPlaceholder = 'Search knowledge base...',
+  searchPlaceholder,
 }: SupporterScaffoldProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const { t } = useI18n();
+  const resolvedSearchPlaceholder = searchPlaceholder ?? t('supporter.searchKnowledge');
 
   const topTabs = [
-    { href: '/supporter/dashboard', label: 'Dashboard' },
-    { href: '/supporter/analytics', label: 'Analytics' },
-    { href: '/supporter/reports', label: 'Reports' },
+    { href: '/supporter/dashboard', label: t('supporter.dashboard') },
+    { href: '/supporter/analytics', label: t('supporter.analytics') },
+    { href: '/supporter/reports', label: t('supporter.reports') },
   ];
 
   const sidebarLinks = [
     {
-      href: '/supporter/order-management',
-      label: 'Order Management',
-      icon: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M6 6h15" />
-          <path d="M6 12h15" />
-          <path d="M6 18h15" />
-          <path d="M3 6h.01" />
-          <path d="M3 12h.01" />
-          <path d="M3 18h.01" />
-        </svg>
-      ),
-    },
-    {
-      href: '/supporter/deposit-requests',
-      label: 'Deposit Requests',
-      icon: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="3" y="5" width="18" height="14" rx="2" />
-          <path d="M8 12h8" />
-          <path d="M12 8v8" />
-        </svg>
-      ),
-    },
-    {
       href: '/supporter/support',
-      label: 'Support',
+      label: t('supporter.support'),
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="12" r="10" />
@@ -65,7 +44,7 @@ export default function SupporterScaffold({
     },
     {
       href: '/supporter/messages',
-      label: 'Messages',
+      label: t('supporter.messages'),
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
@@ -91,31 +70,13 @@ export default function SupporterScaffold({
           <div className="px-6 py-5">
             <Link href="/supporter/messages" className="inline-flex items-center gap-3">
               <span className="text-[24px] font-black tracking-tight text-gray-900">
-                Kinetic<span className="text-primary">Support</span>
+                Kinetic<span className="text-primary">{t('supporter.support')}</span>
               </span>
             </Link>
           </div>
 
-          <div className="px-4">
-            <div className="rounded-[24px] bg-[#F8FAFD] p-4">
-              <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-[20px] font-black text-white shadow-[0_12px_24px_rgba(255,102,0,0.22)]">
-                  SL
-                </div>
-                <div>
-                  <p className="text-[20px] font-black text-gray-900">Support Lead</p>
-                  <p className="mt-1 text-[12px] font-black uppercase tracking-[0.18em] text-[#16A34A]">
-                    Online
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                className="mt-5 inline-flex min-h-[48px] w-full items-center justify-center rounded-2xl bg-[#B45309] px-5 text-[14px] font-black uppercase tracking-[0.12em] text-white shadow-[0_16px_30px_rgba(180,83,9,0.22)] transition-colors hover:bg-[#9A4307]"
-              >
-                + New Ticket
-              </button>
-            </div>
+          <div className="px-4 pb-3">
+            <LanguageSwitcher className="w-full" />
           </div>
 
           <nav className="px-4 py-6">
@@ -153,7 +114,7 @@ export default function SupporterScaffold({
                   <circle cx="12" cy="8" r="4" />
                   <path d="M5 21a7 7 0 0 1 14 0" />
                 </svg>
-                Account
+                {t('supporter.account')}
               </Link>
               <button
                 type="button"
@@ -165,7 +126,7 @@ export default function SupporterScaffold({
                   <polyline points="16 17 21 12 16 7" />
                   <line x1="21" y1="12" x2="9" y2="12" />
                 </svg>
-                Logout
+                {t('supporter.logout')}
               </button>
             </div>
           </div>
@@ -203,11 +164,11 @@ export default function SupporterScaffold({
                     </svg>
                   </span>
                   <input
-                    aria-label={searchPlaceholder}
+                    aria-label={resolvedSearchPlaceholder}
                     type="text"
                     value={searchValue}
                     onChange={(event) => onSearchChange(event.target.value)}
-                    placeholder={searchPlaceholder}
+                    placeholder={resolvedSearchPlaceholder}
                     className="h-[48px] w-full rounded-2xl border border-[#E8EDF4] bg-[#F8FAFD] pl-12 pr-4 text-[14px] font-medium text-gray-800 outline-none transition-colors focus:border-primary"
                   />
                 </label>

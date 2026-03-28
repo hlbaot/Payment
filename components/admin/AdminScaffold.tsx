@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { useI18n } from '@/components/I18nProvider';
 import { usePathname, useRouter } from 'next/navigation';
 import type { ReactNode } from 'react';
 
@@ -19,16 +21,17 @@ export default function AdminScaffold({
 }: AdminScaffoldProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const { t } = useI18n();
 
-  const topTabs = [
-    { href: '/admin/orders', label: 'Orders' },
-    { href: '/admin/deposits', label: 'Deposit Requests' },
-  ];
+  // const topTabs = [
+  //   { href: '/admin/orders', label: 'Orders' },
+  //   { href: '/admin/deposits', label: 'Deposit Requests' },
+  // ];
 
   const sidebarLinks = [
     {
       href: '/admin/orders',
-      label: 'User',
+      label: t('admin.user'),
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="8" r="4" />
@@ -45,7 +48,7 @@ export default function AdminScaffold({
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('userRole');
     localStorage.removeItem('userName');
-    router.replace('/login');
+    router.replace('/');
   };
 
   return (
@@ -61,9 +64,13 @@ export default function AdminScaffold({
               </svg>
             </div>
             <div>
-              <p className="text-[14px] font-black text-gray-900">Financial Admin</p>
-              <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-gray-400">Enterprise Control</p>
+              <p className="text-[14px] font-black text-gray-900">{t('admin.title')}</p>
+              <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-gray-400">{t('admin.subtitle')}</p>
             </div>
+          </div>
+
+          <div className="px-4 pb-2">
+            <LanguageSwitcher className="w-full" />
           </div>
 
           <nav className="px-4 py-4">
@@ -92,7 +99,7 @@ export default function AdminScaffold({
           <div className="px-4 pb-6 pt-3">
             <div className="grid gap-2">
               <Link
-                href="/support"
+                href="/admin/support"
                 className="flex min-h-[44px] items-center gap-3 rounded-2xl px-4 text-[14px] font-semibold text-[#52637A] transition-colors hover:bg-gray-50"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
@@ -100,7 +107,7 @@ export default function AdminScaffold({
                   <path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3" />
                   <path d="M12 17h.01" />
                 </svg>
-                Support
+                {t('admin.support')}
               </Link>
               <button
                 type="button"
@@ -112,14 +119,14 @@ export default function AdminScaffold({
                   <polyline points="16 17 21 12 16 7" />
                   <line x1="21" y1="12" x2="9" y2="12" />
                 </svg>
-                Logout
+                {t('admin.logout')}
               </button>
             </div>
           </div>
         </aside>
 
         <div className="flex-1">
-          <header className="border-b border-gray-200 bg-white">
+          {/* <header className="border-b border-gray-200 bg-white">
             <div className="flex flex-col gap-4 px-6 py-5 xl:flex-row xl:items-center xl:justify-between">
               <div className="flex flex-col gap-4 xl:flex-row xl:items-center">
                 <h1 className="text-[18px] font-black tracking-tight text-primary">Kinetic Finance Admin</h1>
@@ -186,7 +193,7 @@ export default function AdminScaffold({
                 </div>
               </div>
             </div>
-          </header>
+          </header> */}
 
           <main className="px-6 py-8">{children}</main>
         </div>

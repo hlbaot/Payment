@@ -78,52 +78,6 @@ export default function CounterDetailPage() {
 
   return (
     <div className="min-h-screen bg-[#F9FAFB] font-sans flex flex-col">
-      {/* Hero Section */}
-      <div
-        className="relative w-full h-[520px] bg-slate-900 overflow-hidden"
-        style={{
-          backgroundImage: "url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center 40%'
-        }}
-      >
-        <div className="absolute inset-0 bg-black/30"></div>
-        <div className="container max-w-[1140px] mx-auto px-6 relative h-full flex items-center">
-          <div className="bg-white p-10 md:p-12 max-w-[580px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] relative -mt-4">
-            <div className="flex flex-wrap items-center gap-3 mb-5">
-              <span className="bg-primary text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-sm">
-                Priority Global
-              </span>
-              <span className="text-primary text-[11px] font-bold flex items-center gap-[6px] uppercase tracking-widest">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
-                Verified Counter
-              </span>
-            </div>
-            <h1 className="text-[36px] md:text-[38px] font-bold text-gray-900 leading-[1.2] mb-5 tracking-tight">
-              VIP Counter 01 - Kinetic Priority
-            </h1>
-            <p className="text-gray-600 text-[15px] leading-relaxed mb-10">
-              Specializing in high-volume international transactions with priority processing in 5 minutes. Support for multi-currency and kinetic security standards.
-            </p>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-6">
-              <div className="flex items-center gap-2 text-[10px] sm:text-[11px] font-bold text-primary uppercase tracking-widest">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
-                5-Min Processing
-              </div>
-              <div className="flex items-center gap-2 text-[10px] sm:text-[11px] font-bold text-primary uppercase tracking-widest">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10" /><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></svg>
-                Multi-Currency (USD, GBP, EUR)
-              </div>
-              <div className="flex items-center gap-2 text-[10px] sm:text-[11px] font-bold text-primary uppercase tracking-widest">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
-                SwiftGuard Security
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Transaction Types Section */}
       <div className="w-full bg-[#FAFAFA] py-24 pb-32">
         <div className="container max-w-[1140px] mx-auto px-6">
