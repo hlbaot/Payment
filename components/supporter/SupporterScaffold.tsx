@@ -1,10 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { useI18n } from '@/components/I18nProvider';
 import { usePathname, useRouter } from 'next/navigation';
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 
 type SupporterScaffoldProps = {
   children: ReactNode;
@@ -21,7 +20,11 @@ export default function SupporterScaffold({
 }: SupporterScaffoldProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const { t } = useI18n();
+  const { setLocale, t } = useI18n();
+
+  useEffect(() => {
+    setLocale('vi');
+  }, [setLocale]);
 
   const sidebarLinks = [
     {
@@ -70,10 +73,6 @@ export default function SupporterScaffold({
             </Link>
           </div>
 
-          <div className="px-4 pb-3">
-            <LanguageSwitcher className="w-full" />
-          </div>
-
           <nav className="px-4 py-6">
             <div className="grid gap-2">
               {sidebarLinks.map((link) => {
@@ -101,16 +100,6 @@ export default function SupporterScaffold({
 
           <div className="border-t border-gray-100 px-4 py-5 xl:mt-auto">
             <div className="grid gap-2">
-              <Link
-                href="/supporter/dashboard"
-                className="flex min-h-[44px] items-center gap-3 rounded-2xl px-4 text-[14px] font-semibold text-[#52637A] transition-colors hover:bg-white hover:shadow-sm"
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="8" r="4" />
-                  <path d="M5 21a7 7 0 0 1 14 0" />
-                </svg>
-                {t('supporter.account')}
-              </Link>
               <button
                 type="button"
                 onClick={handleLogout}

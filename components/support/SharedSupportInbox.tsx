@@ -223,8 +223,8 @@ export default function SharedSupportInbox({ mode = 'full' }: SharedSupportInbox
       : 'xl:grid-cols-[320px_minmax(520px,1fr)]';
 
   return (
-    <div className={`grid min-h-[calc(100vh-81px)] grid-cols-1 ${gridClassName}`}>
-      <aside className="border-b border-r border-gray-200 bg-white xl:border-b-0">
+    <div className={`grid h-[100dvh] min-h-[680px] grid-cols-1 ${gridClassName}`}>
+      <aside className="flex min-h-0 flex-col border-b border-r border-gray-200 bg-white xl:border-b-0">
         <div className="border-b border-gray-100 px-5 py-5">
           <label className="relative block">
             <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#9AA7BD]">
@@ -244,7 +244,7 @@ export default function SharedSupportInbox({ mode = 'full' }: SharedSupportInbox
 
         </div>
 
-        <div className="max-h-[calc(100vh-240px)] overflow-y-auto p-3">
+        <div className="min-h-0 flex-1 overflow-y-auto p-3">
           {filteredConversations.map((conversation) => {
             const isActive = conversation.id === selectedId;
 
@@ -276,7 +276,10 @@ export default function SharedSupportInbox({ mode = 'full' }: SharedSupportInbox
                         <p className="text-[18px] font-bold tracking-tight text-gray-900">
                           {conversation.userName}
                         </p>
-                        <p className="mt-1 line-clamp-2 text-[14px] font-medium leading-6 text-[#64748B]">
+                        <p className="mt-1 text-[12px] font-semibold tracking-[0.01em] text-[#94A3B8]">
+                          {conversation.userEmail}
+                        </p>
+                        <p className="mt-2 line-clamp-2 text-[14px] font-medium leading-6 text-[#64748B]">
                           {conversation.preview}
                         </p>
                       </div>
@@ -309,7 +312,7 @@ export default function SharedSupportInbox({ mode = 'full' }: SharedSupportInbox
       </aside>
 
       {showChatPanel ? (
-      <section className="flex min-h-[720px] flex-col border-b border-r border-gray-200 bg-white xl:border-b-0">
+      <section className="flex min-h-0 flex-col border-b border-r border-gray-200 bg-white xl:border-b-0">
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-gray-100 px-6 py-5">
           <div className="flex items-center gap-4">
             <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-[#F3F5F8] text-[14px] font-black text-[#64748B]">
@@ -326,7 +329,10 @@ export default function SharedSupportInbox({ mode = 'full' }: SharedSupportInbox
               <h1 className="text-[28px] font-black tracking-tight text-gray-900">
                 {selectedConversation.userName}
               </h1>
-              <p className="mt-1 text-[12px] font-black uppercase tracking-[0.18em] text-[#22C55E]">
+              <p className="mt-1 text-[13px] font-semibold text-[#94A3B8]">
+                {selectedConversation.userEmail}
+              </p>
+              <p className="mt-2 text-[12px] font-black uppercase tracking-[0.18em] text-[#22C55E]">
                 {selectedConversation.online ? t('supporter.online') : t('supporter.offline')}
               </p>
             </div>
@@ -472,7 +478,10 @@ export default function SharedSupportInbox({ mode = 'full' }: SharedSupportInbox
           <h2 className="mt-6 text-center text-[20px] font-black tracking-tight text-gray-900">
             {selectedConversation.userName}
           </h2>
-          <p className="mt-2 text-center text-[13px] font-medium text-[#94A3B8]">
+          <p className="mt-2 text-center text-[13px] font-semibold text-[#94A3B8]">
+            {selectedConversation.userEmail}
+          </p>
+          <p className="mt-1 text-center text-[13px] font-medium text-[#B0B8C6]">
             {selectedConversation.userCode}
           </p>
           {currentRole === 'admin' ? (
@@ -499,6 +508,9 @@ export default function SharedSupportInbox({ mode = 'full' }: SharedSupportInbox
                   </h3>
                   <p className="mt-1 text-[13px] font-medium text-[#7B879C]">
                     {selectedConversation.userName}
+                  </p>
+                  <p className="mt-1 text-[12px] font-semibold text-[#A0AEC0]">
+                    {selectedConversation.userEmail}
                   </p>
                 </div>
 

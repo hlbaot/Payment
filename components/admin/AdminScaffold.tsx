@@ -1,10 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { useI18n } from '@/components/I18nProvider';
 import { usePathname, useRouter } from 'next/navigation';
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 
 type AdminScaffoldProps = {
   searchPlaceholder: string;
@@ -21,7 +20,11 @@ export default function AdminScaffold({
 }: AdminScaffoldProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const { t } = useI18n();
+  const { setLocale, t } = useI18n();
+
+  useEffect(() => {
+    setLocale('vi');
+  }, [setLocale]);
 
   // const topTabs = [
   //   { href: '/admin/orders', label: 'Orders' },
@@ -81,10 +84,6 @@ export default function AdminScaffold({
               <p className="text-[14px] font-black text-gray-900">{t('admin.title')}</p>
               <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-gray-400">{t('admin.subtitle')}</p>
             </div>
-          </div>
-
-          <div className="px-4 pb-2">
-            <LanguageSwitcher className="w-full" />
           </div>
 
           <nav className="px-4 py-4">

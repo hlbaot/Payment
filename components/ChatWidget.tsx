@@ -28,17 +28,25 @@ function nowTime() {
 }
 
 export default function ChatWidget({ prefillMessage }: { prefillMessage?: string }) {
+  const BUBBLE_SIZE = 62;
+  const PANEL_WIDTH = 380;
+  const EMAIL_PROMPT_WIDTH = 360;
+  const VIEWPORT_PADDING = 24;
+  const BUBBLE_BOTTOM_OFFSET = 24;
+  const PANEL_GAP = 26;
   const { t, locale } = useI18n();
   const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [showEmailPrompt, setShowEmailPrompt] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const [contactEmail, setContactEmail] = useState('');
   const [sessionUserName, setSessionUserName] = useState('John Doe');
   const [sessionUserEmail, setSessionUserEmail] = useState('');
   const [emailInput, setEmailInput] = useState('');
   const [emailError, setEmailError] = useState('');
   const [input, setInput] = useState('');
+  const [bubblePosition, setBubblePosition] = useState<{ x: number; y: number } | null>(null);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
@@ -53,9 +61,38 @@ export default function ChatWidget({ prefillMessage }: { prefillMessage?: string
   const inputRef = useRef<HTMLInputElement>(null);
   const emailInputRef = useRef<HTMLInputElement>(null);
   const previousMessageCountRef = useRef(0);
+  const dragStateRef = useRef<{ pointerId: number; startX: number; startY: number; originX: number; originY: number } | null>(null);
+  const dragMovedRef = useRef(false);
+  const pendingPositionRef = useRef<{ x: number; y: number } | null>(null);
+  const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    const getDefaultBubblePosition = () => ({
+      x: window.innerWidth - BUBBLE_SIZE - VIEWPORT_PADDING,
+      y: window.innerHeight - BUBBLE_SIZE - BUBBLE_BOTTOM_OFFSET,
+    });
+
+    const clampBubblePosition = (position: { x: number; y: number }) => ({
+      x: Math.min(Math.max(VIEWPORT_PADDING, position.x), window.innerWidth - BUBBLE_SIZE - VIEWPORT_PADDING),
+      y: Math.min(Math.max(VIEWPORT_PADDING, position.y), window.innerHeight - BUBBLE_SIZE - VIEWPORT_PADDING),
+    });
+
+    const syncPosition = () => {
+      setBubblePosition((current) => clampBubblePosition(current ?? getDefaultBubblePosition()));
+    };
+
+    syncPosition();
+    window.addEventListener('resize', syncPosition);
+    return () => {
+      window.removeEventListener('resize', syncPosition);
+      if (rafRef.current !== null) {
+        window.cancelAnimationFrame(rafRef.current);
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -208,16 +245,101 @@ export default function ChatWidget({ prefillMessage }: { prefillMessage?: string
     setUnread(0);
   };
 
+  const handleBubblePointerDown = (event: React.PointerEvent<HTMLButtonElement>) => {
+    if (!bubblePosition) return;
+
+    dragMovedRef.current = false;
+    setIsDragging(true);
+    dragStateRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      originX: bubblePosition.x,
+      originY: bubblePosition.y,
+    };
+
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+
+  const handleBubblePointerMove = (event: React.PointerEvent<HTMLButtonElement>) => {
+    const dragState = dragStateRef.current;
+    if (!dragState || dragState.pointerId !== event.pointerId) return;
+
+    const deltaX = event.clientX - dragState.startX;
+    const deltaY = event.clientY - dragState.startY;
+
+    if (Math.abs(deltaX) > 4 || Math.abs(deltaY) > 4) {
+      dragMovedRef.current = true;
+    }
+
+    const nextX = dragState.originX + deltaX;
+    const nextY = dragState.originY + deltaY;
+
+    pendingPositionRef.current = {
+      x: Math.min(Math.max(VIEWPORT_PADDING, nextX), window.innerWidth - BUBBLE_SIZE - VIEWPORT_PADDING),
+      y: Math.min(Math.max(VIEWPORT_PADDING, nextY), window.innerHeight - BUBBLE_SIZE - VIEWPORT_PADDING),
+    };
+
+    if (rafRef.current === null) {
+      rafRef.current = window.requestAnimationFrame(() => {
+        if (pendingPositionRef.current) {
+          setBubblePosition(pendingPositionRef.current);
+        }
+        rafRef.current = null;
+      });
+    }
+  };
+
+  const handleBubblePointerUp = (event: React.PointerEvent<HTMLButtonElement>) => {
+    if (dragStateRef.current?.pointerId === event.pointerId) {
+      dragStateRef.current = null;
+      setIsDragging(false);
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  };
+
+  const handleBubbleClick = () => {
+    if (dragMovedRef.current) {
+      dragMovedRef.current = false;
+      return;
+    }
+
+    handleOpenChat();
+  };
+
   if (!mounted) {
     return null;
   }
+
+  const resolvedBubblePosition =
+    bubblePosition ?? {
+      x: VIEWPORT_PADDING,
+      y: VIEWPORT_PADDING,
+    };
+  const panelLeft = Math.min(
+    Math.max(VIEWPORT_PADDING, resolvedBubblePosition.x + BUBBLE_SIZE - PANEL_WIDTH),
+    window.innerWidth - PANEL_WIDTH - VIEWPORT_PADDING
+  );
+  const panelTop = Math.max(VIEWPORT_PADDING, resolvedBubblePosition.y - PANEL_GAP - 520);
+  const emailPromptLeft = Math.min(
+    Math.max(VIEWPORT_PADDING, resolvedBubblePosition.x + BUBBLE_SIZE - EMAIL_PROMPT_WIDTH),
+    window.innerWidth - EMAIL_PROMPT_WIDTH - VIEWPORT_PADDING
+  );
+  const emailPromptTop = Math.max(VIEWPORT_PADDING, resolvedBubblePosition.y - PANEL_GAP - 140);
 
   return (
     <>
       {/* Chat Bubble */}
       <button
-        onClick={handleOpenChat}
-        className={`fixed bottom-6 right-6 z-50 w-[62px] h-[62px] rounded-full flex items-center justify-center shadow-[0_8px_30px_rgba(255,102,0,0.4)] transition-all duration-300 ${
+        onClick={handleBubbleClick}
+        onPointerDown={handleBubblePointerDown}
+        onPointerMove={handleBubblePointerMove}
+        onPointerUp={handleBubblePointerUp}
+        onPointerCancel={handleBubblePointerUp}
+        style={{ left: resolvedBubblePosition.x, top: resolvedBubblePosition.y }}
+        className={`fixed z-50 w-[62px] h-[62px] rounded-full flex items-center justify-center shadow-[0_8px_30px_rgba(255,102,0,0.4)] touch-none select-none will-change-transform ${
+          isDragging ? 'transition-none cursor-grabbing' : 'transition-all duration-300 cursor-grab'
+        } ${
           isOpen 
             ? 'bg-gray-900 rotate-0 scale-100' 
             : 'bg-primary hover:scale-110 hover:shadow-[0_12px_40px_rgba(255,102,0,0.5)]'
@@ -249,7 +371,10 @@ export default function ChatWidget({ prefillMessage }: { prefillMessage?: string
       </button>
 
       {showEmailPrompt ? (
-        <div className="fixed bottom-[88px] right-6 z-50 w-[360px] max-w-[calc(100vw-24px)] rounded-3xl border border-gray-100 bg-white p-5 shadow-[0_20px_60px_rgba(0,0,0,0.12)]">
+        <div
+          style={{ left: emailPromptLeft, top: emailPromptTop }}
+          className="fixed z-50 w-[360px] max-w-[calc(100vw-24px)] rounded-3xl border border-gray-100 bg-white p-5 shadow-[0_20px_60px_rgba(0,0,0,0.12)]"
+        >
           <div className="mb-3 flex items-start justify-between gap-3">
             <div>
               <h4 className="text-[16px] font-bold text-gray-900">{t('chat.email.title')}</h4>
@@ -308,9 +433,12 @@ export default function ChatWidget({ prefillMessage }: { prefillMessage?: string
       ) : null}
 
       {/* Chat Panel */}
-      <div className={`fixed bottom-[88px] right-6 z-50 w-[380px] max-w-[calc(100vw-24px)] bg-white rounded-[28px] shadow-[0_20px_60px_rgba(0,0,0,0.15)] border border-gray-100 flex flex-col overflow-hidden transition-all duration-300 origin-bottom-right ${
+      <div
+        style={{ left: panelLeft, top: panelTop }}
+        className={`fixed z-50 w-[380px] max-w-[calc(100vw-24px)] bg-white rounded-[28px] shadow-[0_20px_60px_rgba(0,0,0,0.15)] border border-gray-100 flex flex-col overflow-hidden transition-all duration-300 origin-bottom-right ${
         isOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-4 pointer-events-none'
-      }`}>
+      }`}
+      >
         
         {/* Header */}
         <div className="bg-gradient-to-r from-[#FF6600] to-[#E65C00] px-6 py-5 flex items-center gap-4">

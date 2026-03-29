@@ -23,7 +23,7 @@ const marketingLinks: NavLink[] = [
   { href: '/find-a-location', labelKey: 'nav.findLocation' },
   { href: '/orders', labelKey: 'nav.trackTransfer' },
   { href: '/documentation', labelKey: 'nav.resources' },
-  { href: '/counter-market', label: 'Counter' },
+  { href: '/counter-market', labelKey: 'nav.counter' },
 ];
 
 const accountLinks: NavLink[] = [
@@ -293,62 +293,7 @@ export default function Navbar() {
 
   const renderGuestActions = (mobile = false) => (
     <div className={mobile ? 'site-mobile-menu__actions' : 'site-header__actions'}>
-      {mobile ? (
-        <button type="button" className="site-chip" aria-label={t('nav.countrySelector')}>
-          <span className="site-chip__flag" aria-hidden="true">
-            <span className="site-chip__flag-inner site-chip__flag-inner--us" />
-          </span>
-          <span className="site-chip__label">US</span>
-          <ChevronIcon />
-        </button>
-      ) : (
-        <div
-          className="site-country-picker"
-          ref={countryMenuRef}
-          onMouseEnter={() => setShowCountryMenu(true)}
-          onMouseLeave={() => setShowCountryMenu(false)}
-        >
-          <button
-            type="button"
-            className={`site-chip${showCountryMenu ? ' is-open' : ''}`}
-            aria-label={t('nav.countrySelector')}
-            aria-haspopup="true"
-            aria-expanded={showCountryMenu}
-            onClick={() => setShowCountryMenu((current) => !current)}
-          >
-            <span className="site-chip__emoji-flag" aria-hidden="true">
-              {selectedCountry.flag}
-            </span>
-            <span className="site-chip__label">{selectedCountry.code}</span>
-            <span className={`site-chip__chevron${showCountryMenu ? ' is-open' : ''}`}>
-              <ChevronIcon />
-            </span>
-          </button>
-
-          {showCountryMenu ? (
-            <div className="site-country-menu" role="menu" aria-label={t('nav.chooseCountry')}>
-              <div className="site-country-menu__grid">
-                {countryOptions.map((country) => (
-                  <button
-                    key={country.code}
-                    type="button"
-                    className={`site-country-menu__item${selectedCountry.code === country.code ? ' is-active' : ''}`}
-                    onClick={() => {
-                      setSelectedCountry(country);
-                      setShowCountryMenu(false);
-                    }}
-                  >
-                    <span className="site-country-menu__flag" aria-hidden="true">
-                      {country.flag}
-                    </span>
-                    <span>{country.name}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          ) : null}
-        </div>
-      )}
+      {renderCountryPicker(mobile)}
 
       <LanguageSwitcher className={mobile ? 'w-full' : ''} align="right" />
 
@@ -357,6 +302,64 @@ export default function Navbar() {
       </Link>
     </div>
   );
+
+  const renderCountryPicker = (mobile = false) =>
+    mobile ? (
+      <button type="button" className="site-chip" aria-label={t('nav.countrySelector')}>
+        <span className="site-chip__emoji-flag" aria-hidden="true">
+          {selectedCountry.flag}
+        </span>
+        <span className="site-chip__label">{selectedCountry.code}</span>
+        <ChevronIcon />
+      </button>
+    ) : (
+      <div
+        className="site-country-picker"
+        ref={countryMenuRef}
+        onMouseEnter={() => setShowCountryMenu(true)}
+        onMouseLeave={() => setShowCountryMenu(false)}
+      >
+        <button
+          type="button"
+          className={`site-chip${showCountryMenu ? ' is-open' : ''}`}
+          aria-label={t('nav.countrySelector')}
+          aria-haspopup="true"
+          aria-expanded={showCountryMenu}
+          onClick={() => setShowCountryMenu((current) => !current)}
+        >
+          <span className="site-chip__emoji-flag" aria-hidden="true">
+            {selectedCountry.flag}
+          </span>
+          <span className="site-chip__label">{selectedCountry.code}</span>
+          <span className={`site-chip__chevron${showCountryMenu ? ' is-open' : ''}`}>
+            <ChevronIcon />
+          </span>
+        </button>
+
+        {showCountryMenu ? (
+          <div className="site-country-menu" role="menu" aria-label={t('nav.chooseCountry')}>
+            <div className="site-country-menu__grid">
+              {countryOptions.map((country) => (
+                <button
+                  key={country.code}
+                  type="button"
+                  className={`site-country-menu__item${selectedCountry.code === country.code ? ' is-active' : ''}`}
+                  onClick={() => {
+                    setSelectedCountry(country);
+                    setShowCountryMenu(false);
+                  }}
+                >
+                  <span className="site-country-menu__flag" aria-hidden="true">
+                    {country.flag}
+                  </span>
+                  <span>{country.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : null}
+      </div>
+    );
 
   const renderMemberActions = (mobile = false) => (
     <div className={mobile ? 'site-mobile-menu__member' : 'site-member'}>
@@ -396,6 +399,9 @@ export default function Navbar() {
 
         {!mobile && showProfileMenu ? (
           <div className="site-profile-menu">
+            <div className="site-profile-menu__country">
+              {renderCountryPicker(false)}
+            </div>
             <Link href="/orders" className="site-profile-menu__item">
               {t('nav.viewOrders')}
             </Link>
@@ -413,9 +419,12 @@ export default function Navbar() {
         ) : null}
 
         {mobile ? (
-          <button type="button" className="site-mobile-menu__logout" onClick={handleLogout}>
-            {t('admin.logout')}
-          </button>
+          <>
+            <div className="site-mobile-menu__country">{renderCountryPicker(true)}</div>
+            <button type="button" className="site-mobile-menu__logout" onClick={handleLogout}>
+              {t('admin.logout')}
+            </button>
+          </>
         ) : null}
       </div>
     </div>
