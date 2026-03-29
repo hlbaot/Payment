@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { useI18n } from '@/components/I18nProvider';
 import {
   DEPOSITS_UPDATED_EVENT,
   formatUsd,
@@ -12,6 +13,7 @@ import {
 import { fakeUsers } from '@/data/fake/users';
 
 export default function WalletPage() {
+  const { t } = useI18n();
   const [walletBalance, setWalletBalance] = useState(0);
   const [depositRequests, setDepositRequests] = useState<DepositRequest[]>([]);
   const [currentUserEmail, setCurrentUserEmail] = useState('user@kinetic.com');
@@ -67,35 +69,35 @@ export default function WalletPage() {
       <div className="mx-auto max-w-[1280px] px-6 md:px-12">
         <main className="pt-12">
           <div className="mb-10 flex flex-col gap-3">
-            <h1 className="text-[28px] font-black tracking-tight text-gray-900">Kinetic Wallet</h1>
+            <h1 className="text-[28px] font-black tracking-tight text-gray-900">{t('user.wallet.title')}</h1>
             <p className="text-[15px] font-medium text-[#64748B]">
-              {currentUserName} can track pending deposits here, and confirmed deposits are added to the wallet automatically after admin approval.
+              {currentUserName} {t('user.wallet.descSuffix')}
             </p>
           </div>
 
           <div className="mb-10 grid gap-8 lg:grid-cols-[1.35fr_0.65fr]">
             <div className="rounded-[36px] bg-primary p-10 text-white shadow-[0_25px_60px_rgba(255,102,0,0.3)]">
-              <p className="text-[12px] font-black uppercase tracking-[0.22em] text-white/70">Available Balance</p>
+              <p className="text-[12px] font-black uppercase tracking-[0.22em] text-white/70">{t('user.wallet.availableBalance')}</p>
               <h2 className="mt-4 text-[58px] font-black leading-none tracking-tight">{formatUsd(walletBalance)}</h2>
-              <p className="mt-3 text-[15px] font-bold text-[#86EFAC]">Lợi nhuận mỗi ngày: 20$</p>
+              <p className="mt-3 text-[15px] font-bold text-[#86EFAC]">{t('user.wallet.dailyProfit')}</p>
               <p className="mt-5 text-[13px] font-medium text-white/80">{currentUserEmail}</p>
 
               <div className="mt-8 grid gap-4 sm:grid-cols-2">
                 <div className="rounded-[24px] bg-white/12 p-5 backdrop-blur-sm">
-                  <p className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">Pending Deposits</p>
+                  <p className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">{t('user.wallet.pendingDeposits')}</p>
                   <p className="mt-3 text-[26px] font-black">{formatUsd(totalPendingAmount)}</p>
                 </div>
                 <div className="rounded-[24px] bg-white/12 p-5 backdrop-blur-sm">
-                  <p className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">Deposit History</p>
+                  <p className="text-[11px] font-black uppercase tracking-[0.18em] text-white/70">{t('user.wallet.depositHistory')}</p>
                   <p className="mt-3 text-[26px] font-black">{formatUsd(totalConfirmedAmount)}</p>
                 </div>
               </div>
             </div>
 
             <div className="rounded-[36px] bg-white p-8 shadow-[0_20px_60px_rgba(0,0,0,0.04)]">
-              <h3 className="text-[20px] font-black tracking-tight text-gray-900">Pending Queue</h3>
+              <h3 className="text-[20px] font-black tracking-tight text-gray-900">{t('user.wallet.pendingQueue')}</h3>
               <p className="mt-2 text-[14px] font-medium text-[#94A3B8]">
-                Support-created orders stay here until admin confirms them.
+                {t('user.wallet.pendingQueueDesc')}
               </p>
 
               <div className="mt-6 space-y-3">
@@ -110,15 +112,15 @@ export default function WalletPage() {
                         <span className="text-[14px] font-black text-primary">{formatUsd(request.amount)}</span>
                       </div>
                       <p className="mt-3 text-[11px] font-black uppercase tracking-[0.16em] text-[#D97706]">
-                        Waiting For Admin Confirmation
+                        {t('user.wallet.waitingAdmin')}
                       </p>
                     </div>
                   ))
                 ) : (
                   <div className="rounded-[24px] border border-dashed border-gray-200 px-5 py-10 text-center">
-                    <p className="text-[15px] font-bold text-gray-900">No pending deposits</p>
+                    <p className="text-[15px] font-bold text-gray-900">{t('user.wallet.noPendingTitle')}</p>
                     <p className="mt-2 text-[13px] font-medium text-[#94A3B8]">
-                      Ask support to create a deposit order and it will appear here.
+                      {t('user.wallet.noPendingDesc')}
                     </p>
                   </div>
                 )}
@@ -128,9 +130,9 @@ export default function WalletPage() {
 
           <div className="rounded-[36px] bg-white p-8 shadow-[0_20px_60px_rgba(0,0,0,0.04)]">
             <div className="flex flex-col gap-2 border-b border-gray-100 pb-6">
-              <h3 className="text-[22px] font-black tracking-tight text-gray-900">Deposit History</h3>
+              <h3 className="text-[22px] font-black tracking-tight text-gray-900">{t('user.wallet.depositHistory')}</h3>
               <p className="text-[14px] font-medium text-[#94A3B8]">
-                Confirmed deposits are stored here after admin approval and reflected in the wallet balance above.
+                {t('user.wallet.historyDesc')}
               </p>
             </div>
 
@@ -138,12 +140,12 @@ export default function WalletPage() {
               <table className="min-w-full">
                 <thead>
                   <tr className="text-left text-[11px] font-black uppercase tracking-[0.18em] text-[#8EA0BC]">
-                    <th className="px-3 py-4">Deposit ID</th>
-                    <th className="px-3 py-4">Method</th>
-                    <th className="px-3 py-4">Created</th>
-                    <th className="px-3 py-4">Confirmed</th>
-                    <th className="px-3 py-4">Amount</th>
-                    <th className="px-3 py-4">Status</th>
+                    <th className="px-3 py-4">{t('user.wallet.depositId')}</th>
+                    <th className="px-3 py-4">{t('user.wallet.method')}</th>
+                    <th className="px-3 py-4">{t('user.wallet.created')}</th>
+                    <th className="px-3 py-4">{t('user.wallet.confirmed')}</th>
+                    <th className="px-3 py-4">{t('user.wallet.amount')}</th>
+                    <th className="px-3 py-4">{t('user.wallet.status')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -157,7 +159,7 @@ export default function WalletPage() {
                         <td className="px-3 py-5 text-[15px] font-black text-[#16A34A]">{formatUsd(request.amount)}</td>
                         <td className="px-3 py-5">
                           <span className="inline-flex min-h-[30px] items-center rounded-full bg-[#ECFDF3] px-3 text-[10px] font-black uppercase tracking-[0.16em] text-[#16A34A]">
-                            Confirmed
+                            {t('user.wallet.confirmedLabel')}
                           </span>
                         </td>
                       </tr>
@@ -165,9 +167,9 @@ export default function WalletPage() {
                   ) : (
                     <tr>
                       <td colSpan={6} className="px-3 py-14 text-center">
-                        <p className="text-[16px] font-bold text-gray-900">No confirmed deposits yet</p>
+                        <p className="text-[16px] font-bold text-gray-900">{t('user.wallet.noHistoryTitle')}</p>
                         <p className="mt-2 text-[13px] font-medium text-[#94A3B8]">
-                          Confirmed items from admin will be stored here automatically.
+                          {t('user.wallet.noHistoryDesc')}
                         </p>
                       </td>
                     </tr>

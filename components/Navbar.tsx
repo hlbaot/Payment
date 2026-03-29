@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 import qrImage from '@/images/QR.png';
 import '@/scss/navbar.scss';
 import { useI18n } from '@/components/I18nProvider';
@@ -155,7 +156,7 @@ const resourcesMenu = {
 };
 
 export default function Navbar() {
-  const { locale, setLocale, t } = useI18n();
+  const { locale, t } = useI18n();
   const pathname = usePathname();
   const router = useRouter();
   const isLoginPage = pathname === '/login';
@@ -166,10 +167,8 @@ export default function Navbar() {
   const [showTransfersMenu, setShowTransfersMenu] = useState(false);
   const [showResourcesMenu, setShowResourcesMenu] = useState(false);
   const [showCountryMenu, setShowCountryMenu] = useState(false);
-  const [showLanguageMenu, setShowLanguageMenu] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState(countryOptions[0]);
   const countryMenuRef = useRef<HTMLDivElement | null>(null);
-  const languageMenuRef = useRef<HTMLDivElement | null>(null);
   const transfersCloseTimerRef = useRef<number | null>(null);
   const resourcesCloseTimerRef = useRef<number | null>(null);
   const showNavOverlay = showTransfersMenu || showResourcesMenu;
@@ -220,20 +219,6 @@ export default function Navbar() {
     return () => window.removeEventListener('mousedown', onPointerDown);
   }, [showCountryMenu]);
 
-  useEffect(() => {
-    if (!showLanguageMenu) return undefined;
-
-    const onPointerDown = (event: MouseEvent) => {
-      if (!languageMenuRef.current) return;
-      if (!languageMenuRef.current.contains(event.target as Node)) {
-        setShowLanguageMenu(false);
-      }
-    };
-
-    window.addEventListener('mousedown', onPointerDown);
-    return () => window.removeEventListener('mousedown', onPointerDown);
-  }, [showLanguageMenu]);
-
   const handleLogout = () => {
     sessionStorage.removeItem('isLoggedIn');
     sessionStorage.removeItem('userRole');
@@ -255,7 +240,6 @@ export default function Navbar() {
     setShowTransfersMenu(false);
     setShowResourcesMenu(false);
     setShowCountryMenu(false);
-    setShowLanguageMenu(false);
   };
 
   const clearTransfersCloseTimer = () => {
@@ -366,55 +350,7 @@ export default function Navbar() {
         </div>
       )}
 
-      {mobile ? (
-        <button type="button" className="site-chip" aria-label={t('nav.languageSelector')}>
-          <span className="site-chip__label">
-            {locale === 'vi' ? t('nav.language.vietnamese') : t('nav.language.english')}
-          </span>
-          <ChevronIcon />
-        </button>
-      ) : (
-        <div
-          className="site-language-picker"
-          ref={languageMenuRef}
-          onMouseEnter={() => setShowLanguageMenu(true)}
-          onMouseLeave={() => setShowLanguageMenu(false)}
-        >
-          <button
-            type="button"
-            className={`site-chip${showLanguageMenu ? ' is-open' : ''}`}
-            aria-label={t('nav.languageSelector')}
-            aria-haspopup="true"
-            aria-expanded={showLanguageMenu}
-            onClick={() => setShowLanguageMenu((current) => !current)}
-          >
-            <span className="site-chip__label">
-              {locale === 'vi' ? t('nav.language.vietnamese') : t('nav.language.english')}
-            </span>
-            <span className={`site-chip__chevron${showLanguageMenu ? ' is-open' : ''}`}>
-              <ChevronIcon />
-            </span>
-          </button>
-
-          {showLanguageMenu ? (
-            <div className="site-language-menu" role="menu" aria-label={t('nav.chooseLanguage')}>
-              {(['en', 'vi'] as const).map((language) => (
-                <button
-                  key={language}
-                  type="button"
-                  className={`site-language-menu__item${locale === language ? ' is-active' : ''}`}
-                  onClick={() => {
-                    setLocale(language);
-                    setShowLanguageMenu(false);
-                  }}
-                >
-                  {language === 'vi' ? t('nav.language.vietnamese') : t('nav.language.english')}
-                </button>
-              ))}
-            </div>
-          ) : null}
-        </div>
-      )}
+      <LanguageSwitcher className={mobile ? 'w-full' : ''} align="right" />
 
       <Link href="/login" className="site-login-link">
         {t('nav.login')}
@@ -424,6 +360,8 @@ export default function Navbar() {
 
   const renderMemberActions = (mobile = false) => (
     <div className={mobile ? 'site-mobile-menu__member' : 'site-member'}>
+      <LanguageSwitcher className={mobile ? 'w-full' : ''} align="right" />
+
       <div className="site-member__links">
         {accountLinks.map((link) => {
           const isActive = pathname === link.href;
@@ -747,18 +685,9 @@ export default function Navbar() {
             })}
           </nav>
 
-          <button
-            type="button"
-            className="site-mobile-menu__language"
-            onClick={() => setLocale(locale === 'vi' ? 'en' : 'vi')}
-          >
-            <span className="site-mobile-menu__language-flag" aria-hidden="true">
-              {selectedCountry.flag}
-            </span>
-            <span className="site-mobile-menu__language-code">
-              {locale === 'vi' ? 'VI' : 'EN'}
-            </span>
-          </button>
+          <div className="site-mobile-menu__language">
+            <LanguageSwitcher className="w-full" />
+          </div>
 
           {mounted && isLoggedIn ? (
             <div className="site-mobile-menu__member-panel">

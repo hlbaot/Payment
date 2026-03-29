@@ -2,10 +2,12 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { useI18n } from '@/components/I18nProvider';
 import { fakeCounters } from '@/data/fake/counters';
 import { fakeUsers } from '@/data/fake/users';
 
 export default function CounterMarketPage() {
+  const { locale, t } = useI18n();
   const defaultUserBalance = fakeUsers.find((user) => user.role === 'user')?.walletBalance ?? 0;
   const [walletBalance, setWalletBalance] = useState(defaultUserBalance);
 
@@ -16,6 +18,14 @@ export default function CounterMarketPage() {
 
   const featuredCounter = fakeCounters[0];
   const shouldShowFeaturedCounter = walletBalance >= featuredCounter.minAmountValue;
+  const featuredCounterTitle =
+    locale === 'vi' ? t('user.counter.featuredTitleVi') : t('user.counter.featuredTitleEn');
+  const featuredCounterSubtitle =
+    locale === 'vi' ? t('user.counter.featuredSubtitleVi') : t('user.counter.featuredSubtitleEn');
+  const featuredCounterOrderTypes =
+    locale === 'vi' ? t('user.counter.featuredOrderTypesVi') : t('user.counter.featuredOrderTypesEn');
+  const featuredCounterBadge =
+    locale === 'vi' ? t('user.counter.openVi') : t('user.counter.openEn');
 
   return (
     <div className="min-h-screen bg-white pb-20 font-sans">
@@ -23,12 +33,12 @@ export default function CounterMarketPage() {
         
         {/* Header Section */}
         <div className="border-l-[3px] border-primary pl-5 mb-14">
-          <h1 className="text-[34px] font-bold text-gray-900 leading-tight mb-3">Counter Marketplace</h1>
+          <h1 className="text-[34px] font-bold text-gray-900 leading-tight mb-3">{t('user.counter.title')}</h1>
           <p className="text-gray-500 text-[15px] max-w-2xl leading-relaxed">
-            Connect with international trading counters quickly, transparently, and with absolute security through the SwiftGuard system.
+            {t('user.counter.desc')}
           </p>
           <p className="mt-3 text-[13px] font-semibold text-gray-500">
-            Wallet balance: <span className="text-primary">${walletBalance.toLocaleString('en-US')} USD</span>
+            {t('user.counter.walletBalance')}: <span className="text-primary">${walletBalance.toLocaleString('en-US')} USD</span>
           </p>
         </div>
 
@@ -44,26 +54,26 @@ export default function CounterMarketPage() {
                   {featuredCounter.icon}
                 </div>
                 <div className="flex-1 pt-1">
-                  <h3 className="font-bold text-[15px] leading-snug text-gray-900">{featuredCounter.title}</h3>
-                  <p className="text-[9px] font-bold uppercase tracking-widest mt-1 text-primary">{featuredCounter.subtitle}</p>
+                  <h3 className="font-bold text-[15px] leading-snug text-gray-900">{featuredCounterTitle}</h3>
+                  <p className="text-[9px] font-bold uppercase tracking-widest mt-1 text-primary">{featuredCounterSubtitle}</p>
                 </div>
                 <div className={`px-2.5 py-1 rounded-md text-[9px] font-bold tracking-widest ${featuredCounter.badgeClass}`}>
-                  {featuredCounter.badge}
+                  {featuredCounterBadge}
                 </div>
               </div>
 
               <div className="flex-1 flex flex-col">
                 <div className="flex justify-between items-center py-[14px] border-t border-gray-100">
-                  <span className="text-[13px] text-gray-500">Min amount</span>
+                  <span className="text-[13px] text-gray-500">{t('user.counter.minAmount')}</span>
                   <span className="font-bold text-[15px] text-gray-900">{featuredCounter.minAmount}</span>
                 </div>
                 <div className="flex justify-between items-center py-[14px] border-t border-gray-100">
-                  <span className="text-[13px] text-gray-500">Commission %</span>
+                  <span className="text-[13px] text-gray-500">{t('user.counter.commission')}</span>
                   <span className="font-bold text-[15px] text-primary">{featuredCounter.commission}</span>
                 </div>
                 <div className="flex justify-between items-center py-[14px] border-t border-gray-100 mb-2">
-                  <span className="text-[13px] text-gray-500">Order types</span>
-                  <span className="font-bold text-[15px] text-gray-900">{featuredCounter.orderTypes}</span>
+                  <span className="text-[13px] text-gray-500">{t('user.counter.orderTypes')}</span>
+                  <span className="font-bold text-[15px] text-gray-900">{featuredCounterOrderTypes}</span>
                 </div>
               </div>
 
@@ -72,7 +82,7 @@ export default function CounterMarketPage() {
                   href={`/counter-market/${featuredCounter.id}`}
                   className="w-full py-[14px] bg-[#F4F5F7] hover:bg-[#EBECEF] text-gray-800 font-bold text-[13px] rounded-xl flex justify-center items-center gap-2 transition-colors"
                 >
-                  VIEW DETAILS
+                  {t('user.counter.viewDetails')}
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <path d="M5 12h14M12 5l7 7-7 7" />
                   </svg>
@@ -84,9 +94,9 @@ export default function CounterMarketPage() {
 
         {!shouldShowFeaturedCounter ? (
           <div className="max-w-[560px] rounded-[28px] border border-dashed border-gray-200 bg-[#FAFAFA] px-8 py-10 text-center">
-            <h2 className="text-[22px] font-bold text-gray-900">No counters available</h2>
+            <h2 className="text-[22px] font-bold text-gray-900">{t('user.counter.emptyTitle')}</h2>
             <p className="mt-3 text-[14px] text-gray-500">
-              Current wallet balance is not enough to unlock this package.
+              {t('user.counter.emptyDesc')}
             </p>
           </div>
         ) : null}

@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useI18n } from '@/components/I18nProvider';
 
 export default function CounterDetailPage() {
+  const { locale, t } = useI18n();
   const [currentStep, setCurrentStep] = useState(0);
   const [displayStep, setDisplayStep] = useState(0);
 
@@ -11,7 +13,7 @@ export default function CounterDetailPage() {
     {
       id: 1,
       badge: 'USD',
-      title: 'US FAST TRANSFER',
+      title: locale === 'vi' ? t('user.counter.detail.transfer1TitleVi') : t('user.counter.detail.transfer1TitleEn'),
       minLimit: '$5,000',
       fee: '2.2%',
       bg: 'bg-[#FFF0E6]',
@@ -23,7 +25,7 @@ export default function CounterDetailPage() {
     {
       id: 2,
       badge: 'GBP',
-      title: 'UK BILL PAYMENT',
+      title: locale === 'vi' ? t('user.counter.detail.transfer2TitleVi') : t('user.counter.detail.transfer2TitleEn'),
       minLimit: '$1,000',
       fee: '1.5%',
       bg: 'bg-[#FFF0E6]',
@@ -34,8 +36,8 @@ export default function CounterDetailPage() {
     },
     {
       id: 3,
-      badge: 'GLOBAL',
-      title: 'SWIFT PAYMENT',
+      badge: locale === 'vi' ? t('user.counter.detail.globalBadgeVi') : t('user.counter.detail.globalBadgeEn'),
+      title: locale === 'vi' ? t('user.counter.detail.transfer3TitleVi') : t('user.counter.detail.transfer3TitleEn'),
       minLimit: '$10,000',
       fee: '2.5%',
       bg: 'bg-[#FFF0E6]',
@@ -83,9 +85,9 @@ export default function CounterDetailPage() {
         <div className="container max-w-[1140px] mx-auto px-6">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 border-b border-transparent pb-2">
             <div>
-              <h2 className="text-[28px] font-bold text-gray-900 mb-2 uppercase tracking-tight">Transaction Types</h2>
+              <h2 className="text-[28px] font-bold text-gray-900 mb-2 uppercase tracking-tight">{t('user.counter.detail.title')}</h2>
               <p className="text-gray-500 text-[15px]">
-                Complete each step in order. After you submit one order, the next package will unlock automatically.
+                {t('user.counter.detail.desc')}
               </p>
             </div>
           </div>
@@ -114,11 +116,11 @@ export default function CounterDetailPage() {
 
                   <div className="flex-1 flex flex-col mb-10 mt-auto px-1">
                     <div className="flex justify-between items-center py-4 border-b border-gray-100/60">
-                      <span className="text-[11px] font-medium text-gray-500">Min. Volume</span>
+                      <span className="text-[11px] font-medium text-gray-500">{t('user.counter.detail.minVolume')}</span>
                       <span className="font-bold text-[14px] text-gray-900">{type.minLimit}</span>
                     </div>
                     <div className="flex justify-between items-center py-4 border-b border-gray-100/60">
-                      <span className="text-[11px] font-medium text-gray-500">Fixed Fee</span>
+                      <span className="text-[11px] font-medium text-gray-500">{t('user.counter.detail.fixedFee')}</span>
                       <span className="font-bold text-[14px] text-gray-900">{type.fee}</span>
                     </div>
                   </div>
@@ -127,7 +129,7 @@ export default function CounterDetailPage() {
                     href={`/create-order?counterId=1&serviceStep=${index}`}
                     className="w-full bg-primary hover:bg-[#E65C00] text-white font-bold text-[14px] tracking-wide rounded-2xl h-[56px] flex items-center justify-center gap-2 transition-all shadow-[0_6px_20px_rgba(255,102,0,0.2)]"
                   >
-                    CREATE ORDER <span className="text-lg leading-none -mt-0.5">&rarr;</span>
+                    {t('user.counter.detail.createOrder')} <span className="text-lg leading-none -mt-0.5">&rarr;</span>
                   </Link>
                 </div>
               );

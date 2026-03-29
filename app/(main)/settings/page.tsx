@@ -2,8 +2,10 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { useI18n } from '@/components/I18nProvider';
 
 export default function SettingsPage() {
+  const { t } = useI18n();
   const [name, setName] = useState('John Doe');
   const [email, setEmail] = useState('john.doe@swiftguard.global');
 
@@ -16,10 +18,10 @@ export default function SettingsPage() {
         {/* Sub Header */}
         <div className="flex justify-between items-center mb-10 pb-6 border-b border-gray-100">
            <div className="flex items-center gap-10">
-              <h1 className="text-[26px] font-bold text-gray-900 tracking-tight">Settings</h1>
+              <h1 className="text-[26px] font-bold text-gray-900 tracking-tight">{t('user.settings.title')}</h1>
               <nav className="hidden md:flex gap-8">
-                 <Link href="/commission-table" className="text-[13px] font-bold text-gray-400 hover:text-gray-600">Market Rates</Link>
-                 <Link href="/support" className="text-[13px] font-bold text-gray-400 hover:text-gray-600">Help Center</Link>
+                 <Link href="/commission-table" className="text-[13px] font-bold text-gray-400 hover:text-gray-600">{t('user.settings.marketRates')}</Link>
+                 <Link href="/support" className="text-[13px] font-bold text-gray-400 hover:text-gray-600">{t('user.settings.helpCenter')}</Link>
               </nav>
            </div>
         </div>
@@ -41,7 +43,7 @@ export default function SettingsPage() {
                     </div>
                     <div>
                        <h2 className="text-[24px] font-black text-gray-900 tracking-tight leading-none mb-2">{name}</h2>
-                       <p className="text-gray-400 text-[14px] font-medium">Basic account information</p>
+                       <p className="text-gray-400 text-[14px] font-medium">{t('user.settings.basicInfo')}</p>
                     </div>
                  </div>
 
@@ -49,7 +51,7 @@ export default function SettingsPage() {
                  <div className="space-y-6">
                     <div className="grid grid-cols-1 gap-8">
                        <div className="space-y-2 md:col-span-2">
-                          <label htmlFor="settings-name" className="text-[11px] font-bold text-gray-400 uppercase tracking-widest pl-1">Full Name</label>
+                          <label htmlFor="settings-name" className="text-[11px] font-bold text-gray-400 uppercase tracking-widest pl-1">{t('user.settings.fullName')}</label>
                           <div className="relative">
                              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0 1 16 0"/></svg>
@@ -64,7 +66,7 @@ export default function SettingsPage() {
                           </div>
                        </div>
                        <div className="space-y-2">
-                          <label htmlFor="settings-email" className="text-[11px] font-bold text-gray-400 uppercase tracking-widest pl-1">Email Address</label>
+                          <label htmlFor="settings-email" className="text-[11px] font-bold text-gray-400 uppercase tracking-widest pl-1">{t('user.settings.emailAddress')}</label>
                           <div className="relative">
                              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
@@ -81,7 +83,7 @@ export default function SettingsPage() {
                     </div>
                     <div className="flex justify-end pt-2">
                        <button className="bg-primary hover:bg-[#E65C00] text-white px-8 py-3.5 rounded-xl font-bold text-[15px] shadow-[0_8px_25px_rgba(255,102,0,0.3)] transition-all">
-                          Save Changes
+                          {t('user.settings.saveChanges')}
                        </button>
                     </div>
                  </div>
