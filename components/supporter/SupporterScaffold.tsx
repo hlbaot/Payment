@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useI18n } from '@/components/I18nProvider';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 
 type SupporterScaffoldProps = {
   children: ReactNode;
@@ -21,10 +21,19 @@ export default function SupporterScaffold({
   const pathname = usePathname();
   const router = useRouter();
   const { setLocale, t } = useI18n();
+  const [supporterName, setSupporterName] = useState('Support Lead');
+  const [supporterEmail, setSupporterEmail] = useState('support@kinetic.com');
 
   useEffect(() => {
     setLocale('vi');
   }, [setLocale]);
+
+  useEffect(() => {
+    const nextName = sessionStorage.getItem('userName') ?? 'Support Lead';
+    const nextEmail = sessionStorage.getItem('userEmail') ?? 'support@kinetic.com';
+    setSupporterName(nextName);
+    setSupporterEmail(nextEmail);
+  }, []);
 
   const sidebarLinks = [
     {
@@ -71,6 +80,20 @@ export default function SupporterScaffold({
                 Kinetic<span className="text-primary">{t('supporter.support')}</span>
               </span>
             </Link>
+          </div>
+
+          <div className="px-4 pb-2">
+            <div className="rounded-[22px] border border-[#F3E7DE] bg-[#FFF9F4] px-4 py-4 shadow-sm">
+              <p className="text-[11px] font-black uppercase tracking-[0.16em] text-[#94A3B8]">
+                Supporter
+              </p>
+              <p className="mt-2 text-[16px] font-bold tracking-tight text-gray-900">
+                {supporterName}
+              </p>
+              <p className="mt-1 text-[13px] font-medium break-all text-[#64748B]">
+                {supporterEmail}
+              </p>
+            </div>
           </div>
 
           <nav className="px-4 py-6">

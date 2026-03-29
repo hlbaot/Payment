@@ -653,6 +653,123 @@ input:focus-visible {
   margin-left: 8px;
 }
 
+.site-country-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.site-country-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.28);
+  backdrop-filter: blur(4px);
+}
+
+.site-country-modal__panel {
+  position: relative;
+  z-index: 1;
+  width: min(720px, calc(100vw - 32px));
+  max-height: min(78vh, 720px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border-radius: 28px;
+  border: 1px solid #ececec;
+  background: #ffffff;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.18);
+}
+
+.site-country-modal__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 24px 16px;
+  border-bottom: 1px solid #f1f3f6;
+}
+
+.site-country-modal__eyebrow {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+
+.site-country-modal__title {
+  margin-top: 6px;
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+.site-country-modal__close {
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  color: #64748b;
+  background: #f8fafc;
+}
+
+.site-country-modal__grid {
+  padding: 18px 24px 24px;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.site-country-modal__option {
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  border-radius: 18px;
+  border: 1px solid #e8edf4;
+  background: #ffffff;
+  text-align: left;
+}
+
+.site-country-modal__option:hover {
+  border-color: #ffd7b8;
+  background: #fff8f2;
+}
+
+.site-country-modal__option.is-active {
+  border-color: #ff6600;
+  background: #fff3e8;
+  box-shadow: inset 0 0 0 1px rgba(255, 102, 0, 0.08);
+}
+
+.site-country-modal__flag {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.site-country-modal__name {
+  flex: 1 1 auto;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.site-country-modal__code {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+
 .site-menu-toggle {
   display: none;
   width: 48px;

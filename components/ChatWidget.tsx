@@ -40,6 +40,7 @@ export default function ChatWidget({ prefillMessage }: { prefillMessage?: string
   const [showEmailPrompt, setShowEmailPrompt] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [currentRole, setCurrentRole] = useState('');
   const [contactEmail, setContactEmail] = useState('');
   const [sessionUserName, setSessionUserName] = useState('John Doe');
   const [sessionUserEmail, setSessionUserEmail] = useState('');
@@ -100,7 +101,9 @@ export default function ChatWidget({ prefillMessage }: { prefillMessage?: string
     const savedEmail = localStorage.getItem('chatContactEmail') ?? '';
     const nextUserName = sessionStorage.getItem('userName') ?? 'John Doe';
     const nextUserEmail = sessionStorage.getItem('userEmail') ?? savedEmail;
+    const nextUserRole = sessionStorage.getItem('userRole') ?? '';
     setIsLoggedIn(nextIsLoggedIn);
+    setCurrentRole(nextUserRole);
     setContactEmail(savedEmail);
     setSessionUserName(nextUserName);
     setSessionUserEmail(nextUserEmail);
@@ -308,6 +311,10 @@ export default function ChatWidget({ prefillMessage }: { prefillMessage?: string
   };
 
   if (!mounted) {
+    return null;
+  }
+
+  if (currentRole === 'supporter') {
     return null;
   }
 

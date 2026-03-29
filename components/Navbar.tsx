@@ -164,6 +164,7 @@ export default function Navbar() {
   const [mounted, setMounted] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showCountryModal, setShowCountryModal] = useState(false);
   const [showTransfersMenu, setShowTransfersMenu] = useState(false);
   const [showResourcesMenu, setShowResourcesMenu] = useState(false);
   const [showCountryMenu, setShowCountryMenu] = useState(false);
@@ -189,6 +190,7 @@ export default function Navbar() {
       setIsLoggedIn(nextIsLoggedIn);
       setShowMobileMenu(false);
       setShowProfileMenu(false);
+      setShowCountryModal(false);
     });
 
     return () => window.cancelAnimationFrame(frame);
@@ -240,6 +242,7 @@ export default function Navbar() {
     setShowTransfersMenu(false);
     setShowResourcesMenu(false);
     setShowCountryMenu(false);
+    setShowCountryModal(false);
   };
 
   const clearTransfersCloseTimer = () => {
@@ -361,6 +364,26 @@ export default function Navbar() {
       </div>
     );
 
+  const renderCountryModalTrigger = () => (
+    <button
+      type="button"
+      className="site-profile-menu__item"
+      onClick={() => {
+        setShowProfileMenu(false);
+        setShowMobileMenu(false);
+        setShowCountryModal(true);
+      }}
+    >
+      <span className="mr-3 text-[18px]" aria-hidden="true">
+        {selectedCountry.flag}
+      </span>
+      <span className="flex-1 text-left">{locale === 'vi' ? 'Quốc gia' : 'Country'}</span>
+      <span className="text-[12px] font-bold uppercase tracking-[0.1em] text-[#94A3B8]">
+        {selectedCountry.code}
+      </span>
+    </button>
+  );
+
   const renderMemberActions = (mobile = false) => (
     <div className={mobile ? 'site-mobile-menu__member' : 'site-member'}>
       <LanguageSwitcher className={mobile ? 'w-full' : ''} align="right" />
@@ -399,9 +422,7 @@ export default function Navbar() {
 
         {!mobile && showProfileMenu ? (
           <div className="site-profile-menu">
-            <div className="site-profile-menu__country">
-              {renderCountryPicker(false)}
-            </div>
+            {renderCountryModalTrigger()}
             <Link href="/orders" className="site-profile-menu__item">
               {t('nav.viewOrders')}
             </Link>
@@ -420,7 +441,7 @@ export default function Navbar() {
 
         {mobile ? (
           <>
-            <div className="site-mobile-menu__country">{renderCountryPicker(true)}</div>
+            <div className="site-mobile-menu__country">{renderCountryModalTrigger()}</div>
             <button type="button" className="site-mobile-menu__logout" onClick={handleLogout}>
               {t('admin.logout')}
             </button>
@@ -459,6 +480,53 @@ export default function Navbar() {
           aria-label={t('nav.closeNavigationOverlay')}
           onClick={closeMenus}
         />
+      ) : null}
+
+      {showCountryModal ? (
+        <div className="site-country-modal" role="dialog" aria-modal="true" aria-label={t('nav.chooseCountry')}>
+          <button
+            type="button"
+            className="site-country-modal__backdrop"
+            aria-label={t('common.close')}
+            onClick={() => setShowCountryModal(false)}
+          />
+          <div className="site-country-modal__panel">
+            <div className="site-country-modal__header">
+              <div>
+                <p className="site-country-modal__eyebrow">{locale === 'vi' ? 'Quốc gia' : 'Country'}</p>
+                <h3 className="site-country-modal__title">{t('nav.chooseCountry')}</h3>
+              </div>
+              <button
+                type="button"
+                className="site-country-modal__close"
+                aria-label={t('common.close')}
+                onClick={() => setShowCountryModal(false)}
+              >
+                <CloseIcon />
+              </button>
+            </div>
+
+            <div className="site-country-modal__grid">
+              {countryOptions.map((country) => (
+                <button
+                  key={`modal-${country.code}`}
+                  type="button"
+                  className={`site-country-modal__option${selectedCountry.code === country.code ? ' is-active' : ''}`}
+                  onClick={() => {
+                    setSelectedCountry(country);
+                    setShowCountryModal(false);
+                  }}
+                >
+                  <span className="site-country-modal__flag" aria-hidden="true">
+                    {country.flag}
+                  </span>
+                  <span className="site-country-modal__name">{country.name}</span>
+                  <span className="site-country-modal__code">{country.code}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
       ) : null}
 
       <header
