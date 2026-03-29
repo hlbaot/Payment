@@ -216,7 +216,7 @@ export default function AdminOrdersPage() {
   const { t } = useI18n();
   const [search, setSearch] = useState('');
   const [orders, setOrders] = useState(initialOrders);
-  const [statusFilter, setStatusFilter] = useState<'ALL' | 'Approved' | 'Rejected'>('ALL');
+  const [statusFilter, setStatusFilter] = useState<'ALL' | 'Pending' | 'Approved' | 'Rejected'>('ALL');
   const [activeOrderId, setActiveOrderId] = useState<string | null>(null);
   const [detailData, setDetailData] = useState(orderDetailsById);
   const [highlightedWalletId, setHighlightedWalletId] = useState<string | null>(null);
@@ -283,6 +283,16 @@ export default function AdminOrdersPage() {
       return matchesSearch && matchesStatus;
     });
   }, [orders, search, statusFilter]);
+
+  const orderCounts = useMemo(
+    () => ({
+      all: orders.length,
+      pending: orders.filter((order) => order.status === 'Pending').length,
+      approved: orders.filter((order) => order.status === 'Approved').length,
+      rejected: orders.filter((order) => order.status === 'Rejected').length,
+    }),
+    [orders]
+  );
 
   const updateStatus = (ids: string[], status: 'Approved' | 'Rejected') => {
     setOrders((current) =>
@@ -373,7 +383,18 @@ export default function AdminOrdersPage() {
                     : 'bg-white text-[#94A3B8] hover:bg-[#F8FAFC]'
                 }`}
               >
-                {t('adminOrders.waiting')}
+                {t('adminOrders.all')} ({orderCounts.all})
+              </button>
+              <button
+                type="button"
+                onClick={() => setStatusFilter('Pending')}
+                className={`inline-flex min-h-[40px] items-center rounded-xl px-4 text-[14px] font-bold transition-colors ${
+                  statusFilter === 'Pending'
+                    ? 'bg-[#FFF4DB] text-[#D97706]'
+                    : 'bg-white text-[#D97706] hover:bg-[#FFF8E8]'
+                }`}
+              >
+                {t('adminOrders.waiting')} ({orderCounts.pending})
               </button>
               <button
                 type="button"
@@ -389,7 +410,7 @@ export default function AdminOrdersPage() {
                   <line x1="15" y1="9" x2="9" y2="15" />
                   <line x1="9" y1="9" x2="15" y2="15" />
                 </svg>
-                {t('adminOrders.reject')}
+                {t('adminOrders.reject')} ({orderCounts.rejected})
               </button>
               <button
                 type="button"
@@ -404,7 +425,7 @@ export default function AdminOrdersPage() {
                   <circle cx="12" cy="12" r="10" />
                   <polyline points="16 9 11 14 8 11" />
                 </svg>
-                {t('adminOrders.accept')}
+                {t('adminOrders.accept')} ({orderCounts.approved})
               </button>
             </div>
 
@@ -415,14 +436,14 @@ export default function AdminOrdersPage() {
 
           <div className="overflow-x-auto">
             <table className="min-w-full">
-              <thead className="bg-[#FBFCFE] text-left">
+              <thead className="bg-[#FBFCFE] text-center">
                 <tr className="text-[12px] font-black uppercase tracking-[0.16em] text-[#8EA0BC]">
-                  <th className="px-6 py-5">{t('adminOrders.email')}</th>
-                  <th className="px-6 py-5">{t('adminOrders.wallet')}</th>
-                  <th className="px-6 py-5">{t('adminOrders.orderName')}</th>
-                  <th className="px-6 py-5">{t('adminOrders.commission')}</th>
-                  <th className="px-6 py-5">{t('adminOrders.status')}</th>
-                  <th className="px-6 py-5 text-right">{t('adminOrders.action')}</th>
+                  <th className="px-6 py-5 text-center">{t('adminOrders.email')}</th>
+                  <th className="px-6 py-5 text-center">{t('adminOrders.wallet')}</th>
+                  <th className="px-6 py-5 text-center">{t('adminOrders.orderName')}</th>
+                  <th className="px-6 py-5 text-center">{t('adminOrders.commission')}</th>
+                  <th className="px-6 py-5 text-center">{t('adminOrders.status')}</th>
+                  <th className="px-6 py-5 text-center">{t('adminOrders.action')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -597,7 +618,9 @@ export default function AdminOrdersPage() {
                   return (
                     <div key={counter.counterName} className="rounded-[28px] border border-gray-100 bg-[#FBFCFE] p-6">
                       <div className="flex items-start justify-between gap-4">
-                        <h4 className="text-[20px] font-black tracking-tight text-gray-900">{counter.counterName}</h4>
+                        <h4 className="text-[20px] font-black tracking-tight text-gray-900">
+                          {counter.counterName.replace('Counter', 'Quầy')}
+                        </h4>
                         <div className="rounded-xl bg-white px-3 py-2 text-right shadow-sm">
                           <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#94A3B8]">
                             {t('adminOrders.shortCommission')}
@@ -609,9 +632,9 @@ export default function AdminOrdersPage() {
                       </div>
                       <div className="mt-5 space-y-4">
                         {counter.items.length > 0 ? (
-                          counter.items.map((item) => (
+                          counter.items.map((item, itemIndex) => (
                             <div key={item.id} className="rounded-2xl bg-white p-4 shadow-sm">
-                              <p className="text-[15px] font-bold text-gray-900">{item.orderLabel}</p>
+                              <p className="text-[15px] font-bold text-gray-900">{`Đơn ${itemIndex + 1}`}</p>
                               <p className="mt-2 text-[13px] font-semibold text-primary">{t('adminOrders.itemCommission')}: {item.commission}</p>
                               <div className="mt-4 flex flex-wrap gap-3">
                                 <button

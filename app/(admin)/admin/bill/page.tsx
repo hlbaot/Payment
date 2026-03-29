@@ -59,13 +59,13 @@ export default function AdminBillPage() {
 
   return (
     <AdminScaffold
-      searchPlaceholder="Search pending bills..."
+      searchPlaceholder="Tìm đơn chờ xử lý..."
       searchValue={search}
       onSearchChange={setSearch}
     >
       <div className="mx-auto max-w-[1180px] space-y-8">
         <div className="max-w-[340px] rounded-[24px] bg-gradient-to-br from-[#D45700] via-[#F36A00] to-[#FF7A00] px-6 py-6 text-white shadow-[0_20px_40px_rgba(243,106,0,0.22)]">
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-white/75">Total Pending Bills</p>
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-white/75">Tổng đơn chờ duyệt</p>
           <div className="mt-3 flex items-end justify-between gap-4">
             <h2 className="text-[40px] font-black leading-none tracking-tight">{pendingRequests.length}</h2>
             <p className="text-right text-[12px] font-bold text-white/85">{formatUsd(pendingAmount)}</p>
@@ -77,11 +77,11 @@ export default function AdminBillPage() {
             <table className="min-w-full">
               <thead className="bg-[#FBFCFE]">
                 <tr className="text-left text-[12px] font-black uppercase tracking-[0.16em] text-[#8EA0BC]">
-                  <th className="px-7 py-5">Name</th>
+                  <th className="px-7 py-5">Tên</th>
                   <th className="px-7 py-5">Email</th>
-                  <th className="px-7 py-5">Wallet</th>
-                  <th className="px-7 py-5">Amount To Add</th>
-                  <th className="px-7 py-5 text-right">Action</th>
+                  <th className="px-7 py-5">Ví</th>
+                  <th className="px-7 py-5">Số tiền cộng</th>
+                  <th className="px-7 py-5 text-right">Thao tác</th>
                 </tr>
               </thead>
               <tbody>
@@ -110,7 +110,7 @@ export default function AdminBillPage() {
                             }}
                             className="inline-flex min-h-[42px] items-center justify-center rounded-2xl bg-[#FFF1F2] px-4 text-[12px] font-black uppercase tracking-[0.14em] text-[#E11D48] transition-colors hover:bg-[#FFE4E8]"
                           >
-                            Cancel
+                            Hủy
                           </button>
                           <button
                             type="button"
@@ -120,7 +120,7 @@ export default function AdminBillPage() {
                             }}
                             className="inline-flex min-h-[42px] items-center justify-center rounded-2xl bg-[#16A34A] px-4 text-[12px] font-black uppercase tracking-[0.14em] text-white transition-colors hover:bg-[#15803D]"
                           >
-                            Accept
+                            Duyệt
                           </button>
                         </div>
                       </td>
@@ -129,9 +129,9 @@ export default function AdminBillPage() {
                 ) : (
                   <tr>
                     <td colSpan={5} className="px-7 py-16 text-center">
-                      <p className="text-[18px] font-bold text-gray-900">No pending bills</p>
+                      <p className="text-[18px] font-bold text-gray-900">Không có đơn chờ xử lý</p>
                       <p className="mt-2 text-[14px] font-medium text-[#94A3B8]">
-                        Support-created wallet top-up bills will appear here when they are waiting for admin approval.
+                        Các đơn nạp ví do support tạo sẽ xuất hiện tại đây khi đang chờ admin duyệt.
                       </p>
                     </td>
                   </tr>

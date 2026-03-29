@@ -44,7 +44,7 @@ export default function AdminScaffold({
     },
     {
       href: '/admin/bill',
-      label: 'Bill',
+      label: 'Đơn',
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M8 2v4" />

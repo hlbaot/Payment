@@ -75,6 +75,7 @@
   "common.cancel": "Cancel",
   "common.save": "Save",
   "adminOrders.searchPlaceholder": "Search admin records...",
+  "adminOrders.all": "All",
   "adminOrders.waiting": "Waiting",
   "adminOrders.reject": "Reject",
   "adminOrders.accept": "Accept",

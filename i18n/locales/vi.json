@@ -75,6 +75,7 @@
   "common.cancel": "Hủy",
   "common.save": "Lưu",
   "adminOrders.searchPlaceholder": "Tìm trong bản ghi admin...",
+  "adminOrders.all": "Tất cả",
   "adminOrders.waiting": "Chờ xử lý",
   "adminOrders.reject": "Từ chối",
   "adminOrders.accept": "Chấp nhận",
