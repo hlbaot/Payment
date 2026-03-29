@@ -30,6 +30,7 @@ export default function SharedSupportInbox({ mode = 'full' }: SharedSupportInbox
   const [reply, setReply] = useState('');
   const [noteDraft, setNoteDraft] = useState('');
   const [depositAmount, setDepositAmount] = useState('');
+  const [depositModalConversationId, setDepositModalConversationId] = useState<string | null>(null);
   const [pendingDepositCount, setPendingDepositCount] = useState(0);
   const [currentRole, setCurrentRole] = useState<'admin' | 'supporter' | 'user' | ''>('');
 
@@ -181,12 +182,14 @@ export default function SharedSupportInbox({ mode = 'full' }: SharedSupportInbox
 
   const handleCreateDepositRequest = () => {
     const nextAmount = Number(depositAmount.replace(/[^0-9.]/g, ''));
-    if (!selectedConversation || !Number.isFinite(nextAmount) || nextAmount <= 0) return;
+    const targetConversation =
+      conversations.find((conversation) => conversation.id === depositModalConversationId) ?? selectedConversation;
+    if (!targetConversation || !Number.isFinite(nextAmount) || nextAmount <= 0) return;
 
     createDepositRequest({
-      conversationId: selectedConversation.id,
-      userName: selectedConversation.userName,
-      userEmail: selectedConversation.userEmail,
+      conversationId: targetConversation.id,
+      userName: targetConversation.userName,
+      userEmail: targetConversation.userEmail,
       amount: nextAmount,
       method: 'Support Wallet Credit',
       note: '',
@@ -195,7 +198,11 @@ export default function SharedSupportInbox({ mode = 'full' }: SharedSupportInbox
     setConversations(loadSupportConversations());
     setPendingDepositCount(loadDepositRequests().filter((request) => request.status === 'Pending').length);
     setDepositAmount('');
+    setDepositModalConversationId(null);
   };
+
+  const activeDepositConversation =
+    conversations.find((conversation) => conversation.id === depositModalConversationId) ?? null;
 
   if (!selectedConversation) {
     return null;
@@ -272,10 +279,12 @@ export default function SharedSupportInbox({ mode = 'full' }: SharedSupportInbox
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="text-[18px] font-bold tracking-tight text-gray-900">
-                          {conversation.userName}
-                        </p>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <p className="text-[18px] font-bold tracking-tight text-gray-900">
+                            {conversation.userName}
+                          </p>
+                        </div>
                         <p className="mt-1 text-[12px] font-semibold tracking-[0.01em] text-[#94A3B8]">
                           {conversation.userEmail}
                         </p>
@@ -283,9 +292,11 @@ export default function SharedSupportInbox({ mode = 'full' }: SharedSupportInbox
                           {conversation.preview}
                         </p>
                       </div>
-                      <span className="text-[12px] font-medium text-[#9AA7BD]">
-                        {conversation.time}
-                      </span>
+                      <div className="flex shrink-0 flex-col items-end gap-2">
+                        <span className="text-[12px] font-medium text-[#9AA7BD]">
+                          {conversation.time}
+                        </span>
+                      </div>
                     </div>
                     <div className="mt-3 flex items-center gap-2">
                       <span
@@ -326,9 +337,23 @@ export default function SharedSupportInbox({ mode = 'full' }: SharedSupportInbox
               ) : null}
             </div>
             <div>
-              <h1 className="text-[28px] font-black tracking-tight text-gray-900">
-                {selectedConversation.userName}
-              </h1>
+              <div className="flex flex-wrap items-center gap-3">
+                <h1 className="text-[28px] font-black tracking-tight text-gray-900">
+                  {selectedConversation.userName}
+                </h1>
+                {currentRole === 'supporter' ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDepositAmount('');
+                      setDepositModalConversationId(selectedConversation.id);
+                    }}
+                    className="inline-flex min-h-[34px] items-center justify-center rounded-full bg-[#FFF3E8] px-4 text-[11px] font-black uppercase tracking-[0.16em] text-primary transition-colors hover:bg-[#FFE8D6]"
+                  >
+                    Lên đơn
+                  </button>
+                ) : null}
+              </div>
               <p className="mt-1 text-[13px] font-semibold text-[#94A3B8]">
                 {selectedConversation.userEmail}
               </p>
@@ -604,6 +629,92 @@ export default function SharedSupportInbox({ mode = 'full' }: SharedSupportInbox
           ) : null}
         </div>
       </aside>
+      ) : null}
+
+      {depositModalConversationId && activeDepositConversation ? (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-[#111827]/40 px-5 py-8">
+          <button
+            type="button"
+            className="absolute inset-0 cursor-default"
+            aria-label={t('common.close')}
+            onClick={() => {
+              setDepositModalConversationId(null);
+              setDepositAmount('');
+            }}
+          />
+          <div className="relative z-[81] w-full max-w-[420px] rounded-[28px] border border-[#F3E7DE] bg-white p-6 shadow-[0_28px_70px_rgba(17,24,39,0.18)]">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#94A3B8]">
+                  Tạo đơn cộng ví
+                </p>
+                <h3 className="mt-2 text-[24px] font-black tracking-tight text-gray-900">
+                  {activeDepositConversation.userName}
+                </h3>
+                <p className="mt-1 text-[13px] font-semibold text-[#94A3B8]">
+                  {activeDepositConversation.userEmail}
+                </p>
+              </div>
+              <button
+                type="button"
+                className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#F8FAFC] text-[#74839B] transition-colors hover:bg-[#F1F5F9]"
+                aria-label={t('common.close')}
+                onClick={() => {
+                  setDepositModalConversationId(null);
+                  setDepositAmount('');
+                }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="mt-6 rounded-[22px] bg-[#FFF8F2] px-4 py-4">
+              <p className="text-[11px] font-black uppercase tracking-[0.16em] text-primary">
+                Số dư ví hiện tại
+              </p>
+              <p className="mt-2 text-[26px] font-black tracking-tight text-gray-900">
+                {formatUsd(getWalletBalance(activeDepositConversation.userEmail))}
+              </p>
+            </div>
+
+            <label className="mt-5 block">
+              <span className="text-[11px] font-black uppercase tracking-[0.16em] text-[#94A3B8]">
+                Số tiền cộng thêm
+              </span>
+              <input
+                type="text"
+                value={depositAmount}
+                onChange={(event) => setDepositAmount(event.target.value)}
+                placeholder="5000"
+                className="mt-2 h-[58px] w-full rounded-[22px] border border-[#F1D7C0] bg-white px-5 text-[26px] font-black tracking-tight text-gray-900 outline-none placeholder:text-[#C4CCD8] focus:border-primary"
+              />
+            </label>
+
+            <div className="mt-6 flex gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setDepositModalConversationId(null);
+                  setDepositAmount('');
+                }}
+                className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-[20px] bg-[#F3F4F6] px-4 text-[13px] font-bold text-[#64748B] transition-colors hover:bg-[#E5E7EB]"
+              >
+                Hủy
+              </button>
+              <button
+                type="button"
+                onClick={handleCreateDepositRequest}
+                disabled={Number(depositAmount.replace(/[^0-9.]/g, '')) <= 0}
+                className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-[20px] bg-[#FF7A1A] px-4 text-[13px] font-black uppercase tracking-[0.16em] text-white shadow-[0_18px_34px_rgba(255,122,26,0.24)] transition-all hover:-translate-y-0.5 hover:bg-[#FF8C38] disabled:translate-y-0 disabled:cursor-not-allowed disabled:bg-[#FFC38F] disabled:shadow-none"
+              >
+                Submit
+              </button>
+            </div>
+          </div>
+        </div>
       ) : null}
     </div>
   );
